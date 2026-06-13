@@ -6,7 +6,7 @@
 
 MindEase: a GenAI well-being companion for Indian students preparing for high-stakes exams (NEET, JEE, CUET, CAT, GATE, UPSC). The student journals freely and logs mood; Gemini analyzes the open-ended text to surface hidden stress triggers and emotional patterns standard trackers miss, and responds as an empathetic companion with tailored, practical coping strategies and short mindfulness exercises.
 
-Brief: *Build a GenAI solution that helps students monitor and improve mental well-being during high-stakes board/entrance exams — analyzing open-ended daily journaling and mood logs to uncover hidden stress triggers and emotional patterns, providing hyper-personalized, contextual support (coping strategies, adaptive mindfulness, motivation) while safely acting as an empathetic, always-available companion.*
+Brief: _Build a GenAI solution that helps students monitor and improve mental well-being during high-stakes board/entrance exams — analyzing open-ended daily journaling and mood logs to uncover hidden stress triggers and emotional patterns, providing hyper-personalized, contextual support (coping strategies, adaptive mindfulness, motivation) while safely acting as an empathetic, always-available companion._
 
 ## SAFETY FIRST — non-negotiable, High Impact (read before anything)
 
@@ -22,6 +22,7 @@ This is a vulnerable-user, sensitive-health domain. Safety is both an ethical du
 ## Why it's built this way (scoring rubric — optimize for this)
 
 **Primary objective: win the leaderboard.** Build for the highest score; completeness of mapped, working features beats ambition. Evaluator scores these; tiers from the brief guide focus:
+
 1. **Problem-statement alignment** — gating/High Impact. Every feature maps to a brief phrase; README leads with the mapping table; each mapped feature must actually work in the live build. Exam-specific framing is alignment generic apps lack.
 2. **Correct use of Google services** — Antigravity (build), Cloud Run (deploy), Gemini (analysis/companion), Firestore (persistence). Name them in the README.
 3. **Code Quality** — High Impact AND our weakest dimension last round (86): the single biggest opportunity. Treat as a first-class deliverable, not cleanup. Strict TypeScript (no `any`), small pure modules (`safety.ts`, `trends.ts`, `emotions.ts`) with clear boundaries, ESLint + Prettier configured and clean, robust error handling, no dead code, consistent naming, a short README architecture note. Budget a dedicated pass.
@@ -30,6 +31,7 @@ This is a vulnerable-user, sensitive-health domain. Safety is both an ethical du
 6. **Efficiency** (quick-log skips AI; cache; PWA precache) · 7. **Accessibility** (calm UI, semantic, keyboard, AA+, reduced-motion) — needed for a perfect score.
 
 **Two-stage evaluation — build for both.** Stage 1 (automated, drives leaderboard) checks: compiles + **live link loads**, solves **this specific** challenge, code is **modular**. Stage 2 (human jury, Top-50 gate) interacts with the **live demo** for polish, UX, and edge cases. Two non-negotiables that follow:
+
 - **Zero-friction live preview** (make-or-break for judges): instantly usable on first click — fast load, no console errors, **no login/auth wall** (keep anonymous IDs), no broken/CORS errors; first screen meaningful immediately (mood-meter + prompt), never a cold blank state.
 - **Edge cases are judged:** handle empty state, very long input, gibberish/empty input, offline, and Gemini/Firestore failure gracefully — never a crash, blank, or hung spinner.
 - **No feature bloat:** strict adherence to §1 of the spec; nothing extra (no auth, no social). Cut scope and polish the core.
@@ -45,14 +47,14 @@ This is a vulnerable-user, sensitive-health domain. Safety is both an ethical du
 
 ## Brief → feature mapping (reproduce verbatim in README.md)
 
-| Brief phrase | Feature |
-|---|---|
-| Monitor well-being | Mood-meter emotion log (~24 words, energy×pleasantness) + tags, 2-tap quick-log path, plus optional open-ended journal; stored privately. |
-| Analyze open-ended journaling | Gemini reads each entry and returns themes, detected stressors, and an empathetic reflection. |
-| Uncover hidden stress triggers & patterns | Trends view: recurring triggers, mood-over-time, correlations (e.g. "low mood clusters before mock tests") computed in code from tagged entries. |
-| Hyper-personalized contextual support | Tailored coping strategy + a short mindfulness exercise chosen for the entry's detected state and the user's exam context. |
-| Empathetic always-available companion | Supportive chat/reflection turn after each entry, within strict safety bounds. |
-| Safely | Continuous crisis detection + always-visible one-tap SOS (helplines + grounding), non-clinical disclaimers, anti-rumination guardrails (see SAFETY). |
+| Brief phrase                              | Feature                                                                                                                                              |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Monitor well-being                        | Mood-meter emotion log (~24 words, energy×pleasantness) + tags, 2-tap quick-log path, plus optional open-ended journal; stored privately.            |
+| Analyze open-ended journaling             | Gemini reads each entry and returns themes, detected stressors, and an empathetic reflection.                                                        |
+| Uncover hidden stress triggers & patterns | Trends view: recurring triggers, mood-over-time, correlations (e.g. "low mood clusters before mock tests") computed in code from tagged entries.     |
+| Hyper-personalized contextual support     | Tailored coping strategy + a short mindfulness exercise chosen for the entry's detected state and the user's exam context.                           |
+| Empathetic always-available companion     | Supportive chat/reflection turn after each entry, within strict safety bounds.                                                                       |
+| Safely                                    | Continuous crisis detection + always-visible one-tap SOS (helplines + grounding), non-clinical disclaimers, anti-rumination guardrails (see SAFETY). |
 
 ## Tech stack & conventions
 

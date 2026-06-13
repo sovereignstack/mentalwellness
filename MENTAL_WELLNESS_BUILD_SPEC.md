@@ -2,7 +2,7 @@
 
 PromptWars submission spec. Build inside Antigravity, deploy to Google Cloud Run, push to a public GitHub repo (single branch, < 10 MB). Read `GEMINI.md` / `AGENT_BUILD_RULES.md` first. **Safety is the top priority alongside problem-statement alignment** — this is a vulnerable-user domain.
 
-**Problem statement:** *Build a GenAI solution that helps students monitor and improve their mental well-being during high-stakes board/entrance exams (NEET, JEE, CUET, CAT, GATE, UPSC). Analyze open-ended daily journaling and mood logs to uncover hidden stress triggers and emotional patterns standard trackers miss; provide hyper-personalized, contextual support (coping strategies, adaptive mindfulness, motivation) while safely acting as an empathetic, always-available companion.*
+**Problem statement:** _Build a GenAI solution that helps students monitor and improve their mental well-being during high-stakes board/entrance exams (NEET, JEE, CUET, CAT, GATE, UPSC). Analyze open-ended daily journaling and mood logs to uncover hidden stress triggers and emotional patterns standard trackers miss; provide hyper-personalized, contextual support (coping strategies, adaptive mindfulness, motivation) while safely acting as an empathetic, always-available companion._
 
 ---
 
@@ -10,11 +10,11 @@ PromptWars submission spec. Build inside Antigravity, deploy to Google Cloud Run
 
 Goal: top of the leaderboard. The evaluator scores fixed dimensions; here is where the points are and how this build targets each. Optimize in this order.
 
-- **Problem-statement alignment (High, gating).** Every feature maps 1:1 to a brief phrase (§1), and the README leads with that mapping table. Exam-specific framing (mock tests, results, parental pressure) is alignment most generic apps can't show. *Win move:* make the mapping table the first thing in the README, and make sure each listed feature actually works in the live build.
-- **Safe & responsible implementation (High — scored as "Security" here).** This is a vulnerable-user domain; safety is both ethics and points. Two-layer crisis detection, always-visible one-tap SOS, grounding + India helplines (precached so they work offline), non-clinical disclaimers, privacy-first design. *Win move:* demonstrate the crisis flow visibly; a reviewer should see it work.
-- **Code Quality (High — and the dimension we scored lowest on last round, 86).** This is the single biggest opportunity. See §10 for concrete standards: strict TypeScript, small pure modules with clear boundaries (`safety.ts`, `trends.ts`, `emotions.ts`), ESLint + Prettier configured and clean, no dead code, consistent naming, errors handled, a short architecture note in the README. *Win move:* treat code quality as a first-class deliverable, not cleanup — budget a dedicated pass (milestone 8).
-- **Testing (Medium).** High coverage on the pure logic (safety detection, trends/correlations, emotion taxonomy) — these are deterministic and cheap to cover well. *Win move:* aim for near-100% on pure modules; include crisis-phrase fixtures.
-- **Efficiency (Medium).** Minimal Gemini calls (quick-log skips AI entirely), cached trends, small bundle, PWA precache. 
+- **Problem-statement alignment (High, gating).** Every feature maps 1:1 to a brief phrase (§1), and the README leads with that mapping table. Exam-specific framing (mock tests, results, parental pressure) is alignment most generic apps can't show. _Win move:_ make the mapping table the first thing in the README, and make sure each listed feature actually works in the live build.
+- **Safe & responsible implementation (High — scored as "Security" here).** This is a vulnerable-user domain; safety is both ethics and points. Two-layer crisis detection, always-visible one-tap SOS, grounding + India helplines (precached so they work offline), non-clinical disclaimers, privacy-first design. _Win move:_ demonstrate the crisis flow visibly; a reviewer should see it work.
+- **Code Quality (High — and the dimension we scored lowest on last round, 86).** This is the single biggest opportunity. See §10 for concrete standards: strict TypeScript, small pure modules with clear boundaries (`safety.ts`, `trends.ts`, `emotions.ts`), ESLint + Prettier configured and clean, no dead code, consistent naming, errors handled, a short architecture note in the README. _Win move:_ treat code quality as a first-class deliverable, not cleanup — budget a dedicated pass (milestone 8).
+- **Testing (Medium).** High coverage on the pure logic (safety detection, trends/correlations, emotion taxonomy) — these are deterministic and cheap to cover well. _Win move:_ aim for near-100% on pure modules; include crisis-phrase fixtures.
+- **Efficiency (Medium).** Minimal Gemini calls (quick-log skips AI entirely), cached trends, small bundle, PWA precache.
 - **Accessibility (Low, but needed for a perfect score).** Calm low-stimulation UI, semantic HTML, keyboard nav, AA+ contrast, screen-reader-friendly mood meter, reduced-motion.
 - **Correct use of Google services.** Antigravity (built-with), Cloud Run (deploy), Gemini (analysis/companion), Firestore (persistence) — name them in the README.
 
@@ -46,14 +46,14 @@ MindEase is a **well-being companion, not a therapist, diagnostician, or crisis 
 
 A calm daily companion: the student logs mood and journals freely; Gemini reads the open text, reflects empathetically, names likely stressors, and offers one tailored coping strategy + one short mindfulness exercise fitted to their exam context. Over time, a Trends view surfaces hidden patterns. Reproduce this table in the README:
 
-| Brief phrase | Feature |
-|---|---|
-| Monitor well-being | Mood-meter emotion log (~24 words across energy×pleasantness quadrants) + context tags, with a 2-tap quick-log path, plus an optional open-ended journal — stored privately per user. |
-| Analyze open-ended journaling | Gemini reads each entry → empathetic reflection + detected themes + likely stressors (structured JSON). |
-| Uncover hidden triggers & patterns | Trends view computed in code from history: emotion/trigger frequencies, mood-over-time, and correlations (e.g. low-mood days clustering with mock tests / poor sleep). |
-| Hyper-personalized contextual support | One coping strategy + one mindfulness exercise selected for the entry's detected state and the student's exam/timeline. |
-| Empathetic always-available companion | A bounded follow-up reflection turn after each entry. |
-| Safely | Continuous crisis detection + always-visible one-tap SOS (helplines + grounding exercise), non-clinical disclaimers, anti-rumination guardrails (§0). |
+| Brief phrase                          | Feature                                                                                                                                                                               |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Monitor well-being                    | Mood-meter emotion log (~24 words across energy×pleasantness quadrants) + context tags, with a 2-tap quick-log path, plus an optional open-ended journal — stored privately per user. |
+| Analyze open-ended journaling         | Gemini reads each entry → empathetic reflection + detected themes + likely stressors (structured JSON).                                                                               |
+| Uncover hidden triggers & patterns    | Trends view computed in code from history: emotion/trigger frequencies, mood-over-time, and correlations (e.g. low-mood days clustering with mock tests / poor sleep).                |
+| Hyper-personalized contextual support | One coping strategy + one mindfulness exercise selected for the entry's detected state and the student's exam/timeline.                                                               |
+| Empathetic always-available companion | A bounded follow-up reflection turn after each entry.                                                                                                                                 |
+| Safely                                | Continuous crisis detection + always-visible one-tap SOS (helplines + grounding exercise), non-clinical disclaimers, anti-rumination guardrails (§0).                                 |
 
 **Chosen vertical (state in README):** students in high-stakes Indian exam preparation.
 
@@ -105,8 +105,17 @@ Make the app a Progressive Web App so a student can install it to their home scr
 
 ```ts
 type MoodTag =
-  | 'exam_pressure' | 'mock_test' | 'results' | 'parents' | 'comparison'
-  | 'sleep' | 'focus' | 'self_doubt' | 'time_management' | 'health' | 'other';
+  | 'exam_pressure'
+  | 'mock_test'
+  | 'results'
+  | 'parents'
+  | 'comparison'
+  | 'sleep'
+  | 'focus'
+  | 'self_doubt'
+  | 'time_management'
+  | 'health'
+  | 'other';
 
 // Curated emotion "mood meter" (~24 words) grouped by quadrant of
 // energy (high/low) × pleasantness (pleasant/unpleasant). Lets a student
@@ -121,16 +130,16 @@ type Emotion = { word: string; quadrant: EmotionQuadrant };
 type Entry = {
   id: string;
   userId: string;
-  date: string;              // YYYY-MM-DD
-  mood: 1 | 2 | 3 | 4 | 5;   // quick scalar (derived from emotion quadrant or picked directly)
-  emotions: string[];        // chosen mood-meter words
-  tags: MoodTag[];           // user-selected context
-  journal: string;           // open-ended text (OPTIONAL — quick-log entries may omit it)
-  quickLog: boolean;         // true if logged without a journal entry
+  date: string; // YYYY-MM-DD
+  mood: 1 | 2 | 3 | 4 | 5; // quick scalar (derived from emotion quadrant or picked directly)
+  emotions: string[]; // chosen mood-meter words
+  tags: MoodTag[]; // user-selected context
+  journal: string; // open-ended text (OPTIONAL — quick-log entries may omit it)
+  quickLog: boolean; // true if logged without a journal entry
   // AI-derived (only when journal present):
   themes: string[];
   detectedStressors: string[];
-  reflection: string;        // empathetic response shown to user
+  reflection: string; // empathetic response shown to user
   copingStrategy: string;
   mindfulnessExercise: string;
   safetyFlag: 'none' | 'elevated' | 'crisis';
@@ -179,17 +188,22 @@ From the user's entries: average mood and trend; emotion-word frequency (by quad
 Always JSON-only where structured; parse defensively. The safety pre-check happens first.
 
 ### 7a. Analyze entry (`/api/entry`)
+
 Step 1 (code): `screenText(journal)`.
 Step 2 (Gemini safety classify) — cheap, strict:
+
 ```
 Classify the following student journal text for immediate safety risk.
 Return ONLY JSON: {"risk":"none"|"elevated"|"crisis"}.
 "crisis" = any sign of self-harm, suicidal thoughts, or intent to harm.
 "elevated" = severe hopelessness/overwhelm without explicit self-harm. Text: <journal>
 ```
+
 Combine: `final = max(codeFlag, geminiFlag)` (crisis > elevated > none).
+
 - If `crisis` or `elevated` → return Crisis/Support-with-resources response from `safety.ts`; still save the entry with the flag; DO NOT generate normal coping tips for `crisis`.
 - Else Step 3 (Gemini analyze + support), ONE call:
+
 ```
 You are a warm, supportive well-being companion for an Indian student preparing for <exam>.
 You are NOT a therapist and must not diagnose or give medical advice.
@@ -205,7 +219,9 @@ Mood the user self-reported: <mood>/5. Context tags: <tags>.
 ```
 
 ### 7b. Companion follow-up (`/api/companion`)
+
 Re-run the safety pre-check on the user's message first (same combine rule). If safe, a bounded supportive reply:
+
 ```
 Continue as the same warm, non-clinical companion. Keep it brief, validating, and gently
 constructive. Do not diagnose, do not give medical advice, do not encourage dependence —
@@ -225,6 +241,7 @@ On any `elevated`/`crisis` flag, the UI shows a calm card: a short caring messag
 ## 9. Testing (scored)
 
 Vitest + RTL.
+
 - **Safety (highest value):** `screenText` flags crisis/elevated/none on fixtures; combine rule never downgrades a code crisis; crisis response includes grounding + resources and omits coping tips; one-tap SOS reachable from every screen.
 - **Trends logic:** mood averages/trend, emotion/tag frequency, correlation statements on sample data.
 - **Logging paths:** quick-log saves without a journal and skips the Gemini call; full entry triggers analysis.
@@ -246,6 +263,7 @@ Core pure modules (safety, trends) fully covered.
 **Efficiency:** quick-log entries make **zero** Gemini calls; full entries make at most two (safety classify + analyze), one for companion; cache trends; PWA precache for instant loads; small bundle to keep repo/runtime light.
 
 **Code Quality (High Impact — our lowest dimension last round at 86; the biggest opportunity, treat as a first-class deliverable):**
+
 - **Strict TypeScript** end to end (no `any`; typed API contracts shared between client and server).
 - **Clear module boundaries:** pure logic isolated in `safety.ts`, `trends.ts`, `emotions.ts`; thin API handlers; small, focused, reusable UI components. Each pure module independently testable.
 - **Small functions, single responsibility, descriptive names;** no dead code, no commented-out blocks, no unused deps.

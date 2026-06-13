@@ -21,7 +21,7 @@ function App() {
   const [config, setConfig] = useState<LocalConfig>({
     exam: 'JEE',
     examDate: '',
-    localOnly: false
+    localOnly: false,
   });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -56,13 +56,13 @@ function App() {
     setConfig({
       exam: 'JEE',
       examDate: '',
-      localOnly: false
+      localOnly: false,
     });
   };
 
   const handleEntryLogged = () => {
     // Increment trigger to force trends view reload when navigated
-    setRefreshTrigger(prev => prev + 1);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   if (!onboarded) {
@@ -76,11 +76,7 @@ function App() {
   return (
     <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
       {activeTab === 'today' && (
-        <Today 
-          exam={config.exam} 
-          localOnly={config.localOnly} 
-          onEntryLogged={handleEntryLogged} 
-        />
+        <Today exam={config.exam} localOnly={config.localOnly} onEntryLogged={handleEntryLogged} />
       )}
       {activeTab === 'trends' && (
         <Suspense
@@ -94,11 +90,7 @@ function App() {
           <TrendsView localOnly={config.localOnly} refreshTrigger={refreshTrigger} />
         </Suspense>
       )}
-      {activeTab === 'help' && (
-        <HelpSOS 
-          onDataWiped={handleDataWiped} 
-        />
-      )}
+      {activeTab === 'help' && <HelpSOS onDataWiped={handleDataWiped} />}
     </Layout>
   );
 }

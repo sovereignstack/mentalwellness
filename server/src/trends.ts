@@ -19,7 +19,7 @@ interface EntryLike {
  */
 export function calculateTrends(entries: EntryLike[]): TrendSummary {
   const totalEntries = entries.length;
-  
+
   if (totalEntries === 0) {
     return {
       averageMood: 0,
@@ -27,7 +27,7 @@ export function calculateTrends(entries: EntryLike[]): TrendSummary {
       emotionFrequencies: {},
       tagFrequencies: {},
       correlations: [],
-      totalEntries: 0
+      totalEntries: 0,
     };
   }
 
@@ -41,7 +41,8 @@ export function calculateTrends(entries: EntryLike[]): TrendSummary {
     const sortedEntries = [...entries].sort((a, b) => a.date.localeCompare(b.date));
     const half = Math.floor(sortedEntries.length / 2);
     const firstHalfAvg = sortedEntries.slice(0, half).reduce((sum, e) => sum + e.mood, 0) / half;
-    const secondHalfAvg = sortedEntries.slice(half).reduce((sum, e) => sum + e.mood, 0) / (sortedEntries.length - half);
+    const secondHalfAvg =
+      sortedEntries.slice(half).reduce((sum, e) => sum + e.mood, 0) / (sortedEntries.length - half);
 
     const diff = secondHalfAvg - firstHalfAvg;
     if (diff > 0.25) {
@@ -69,7 +70,7 @@ export function calculateTrends(entries: EntryLike[]): TrendSummary {
   }
 
   // 4. Low Mood (mood <= 2) co-occurrence analysis
-  const lowMoodEntries = entries.filter(e => e.mood <= 2);
+  const lowMoodEntries = entries.filter((e) => e.mood <= 2);
   const correlations: string[] = [];
 
   if (lowMoodEntries.length > 0) {
@@ -86,10 +87,8 @@ export function calculateTrends(entries: EntryLike[]): TrendSummary {
     }
 
     // Sort tags and emotions by their frequency in low mood entries
-    const sortedLowTags = Object.entries(lowMoodTags)
-      .sort((a, b) => b[1] - a[1]);
-    const sortedLowEmotions = Object.entries(lowMoodEmotions)
-      .sort((a, b) => b[1] - a[1]);
+    const sortedLowTags = Object.entries(lowMoodTags).sort((a, b) => b[1] - a[1]);
+    const sortedLowEmotions = Object.entries(lowMoodEmotions).sort((a, b) => b[1] - a[1]);
 
     const formatTagName = (tag: string) => tag.replace('_', ' ');
 
@@ -113,7 +112,7 @@ export function calculateTrends(entries: EntryLike[]): TrendSummary {
         );
       }
     }
-    
+
     // Fallback simple correlation if we have low mood entries but none hit the threshold
     if (correlations.length === 0 && sortedLowTags.length > 0) {
       const topTag = sortedLowTags[0][0];
@@ -125,7 +124,9 @@ export function calculateTrends(entries: EntryLike[]): TrendSummary {
 
   // Ensure we always return at least an encouraging statement if there are no low-mood entries
   if (correlations.length === 0) {
-    correlations.push("We haven't detected any low-mood clusters. Keep taking regular breaks during your study sessions!");
+    correlations.push(
+      "We haven't detected any low-mood clusters. Keep taking regular breaks during your study sessions!"
+    );
   }
 
   return {
@@ -134,6 +135,6 @@ export function calculateTrends(entries: EntryLike[]): TrendSummary {
     emotionFrequencies,
     tagFrequencies,
     correlations,
-    totalEntries
+    totalEntries,
   };
 }

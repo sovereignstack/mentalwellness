@@ -43,13 +43,16 @@ Text: "${text.replace(/"/g, '\\"')}"`;
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
-        responseMimeType: 'application/json'
-      }
+        responseMimeType: 'application/json',
+      },
     });
 
     const responseText = response.text || '';
     const parsed = JSON.parse(responseText.trim());
-    if (parsed && (parsed.risk === 'none' || parsed.risk === 'elevated' || parsed.risk === 'crisis')) {
+    if (
+      parsed &&
+      (parsed.risk === 'none' || parsed.risk === 'elevated' || parsed.risk === 'crisis')
+    ) {
       return parsed.risk;
     }
     return 'none';
@@ -70,12 +73,16 @@ export async function analyzeEntry(
   tags: string[]
 ): Promise<AnalysisResult> {
   const fallbackResult: AnalysisResult = {
-    reflection: "Thank you for sharing your thoughts today. Taking a moment to journal is a great way to step back and reflect.",
-    themes: tags.length > 0 ? tags : ["reflection"],
-    detectedStressors: tags.length > 0 ? tags : ["general pressure"],
-    copingStrategy: "Take a short 5-minute stretch break and drink a glass of water before starting your next study block.",
-    mindfulnessExercise: "Close your eyes, sit comfortably, and take 5 slow, deep breaths, focusing entirely on the feeling of your lungs expanding and contracting.",
-    motivation: "Steady effort matters more than any single day — you are showing up, and that counts."
+    reflection:
+      'Thank you for sharing your thoughts today. Taking a moment to journal is a great way to step back and reflect.',
+    themes: tags.length > 0 ? tags : ['reflection'],
+    detectedStressors: tags.length > 0 ? tags : ['general pressure'],
+    copingStrategy:
+      'Take a short 5-minute stretch break and drink a glass of water before starting your next study block.',
+    mindfulnessExercise:
+      'Close your eyes, sit comfortably, and take 5 slow, deep breaths, focusing entirely on the feeling of your lungs expanding and contracting.',
+    motivation:
+      'Steady effort matters more than any single day — you are showing up, and that counts.',
   };
 
   const ai = getAI();
@@ -105,8 +112,8 @@ Journal entry: "${journal.replace(/"/g, '\\"')}"`;
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
-        responseMimeType: 'application/json'
-      }
+        responseMimeType: 'application/json',
+      },
     });
 
     const responseText = response.text || '';
@@ -149,17 +156,18 @@ export async function companionChat(
   newMessage: string,
   exam: string
 ): Promise<string> {
-  const fallbackReply = "I'm here to support you. Let's take it one step at a time. Have you had a chance to rest or drink some water recently?";
-  
+  const fallbackReply =
+    "I'm here to support you. Let's take it one step at a time. Have you had a chance to rest or drink some water recently?";
+
   const ai = getAI();
   if (!ai) {
     return fallbackReply;
   }
 
   try {
-    const formattedHistory = history.map(h => 
-      `${h.role === 'user' ? 'Student' : 'Companion'}: ${h.text}`
-    ).join('\n');
+    const formattedHistory = history
+      .map((h) => `${h.role === 'user' ? 'Student' : 'Companion'}: ${h.text}`)
+      .join('\n');
 
     const prompt = `You are MindEase, a warm, non-clinical well-being companion for an Indian student preparing for ${exam || 'high-stakes board/entrance exams'}.
 You are NOT a therapist; never diagnose or give medical advice.

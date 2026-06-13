@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip as ChartTooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip as ChartTooltip,
   ResponsiveContainer,
   LineChart,
-  Line
+  Line,
 } from 'recharts';
 import { BarChart2, Calendar, Sparkles, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
 import type { TrendData, TrendDirection } from '@shared/types';
@@ -34,7 +34,7 @@ function calculateLocalTrends(entries: LocalEntry[]): TrendData {
       emotionFrequencies: {},
       tagFrequencies: {},
       correlations: [],
-      totalEntries: 0
+      totalEntries: 0,
     };
   }
 
@@ -46,7 +46,8 @@ function calculateLocalTrends(entries: LocalEntry[]): TrendData {
     const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
     const half = Math.floor(sorted.length / 2);
     const firstHalfAvg = sorted.slice(0, half).reduce((sum, e) => sum + e.mood, 0) / half;
-    const secondHalfAvg = sorted.slice(half).reduce((sum, e) => sum + e.mood, 0) / (sorted.length - half);
+    const secondHalfAvg =
+      sorted.slice(half).reduce((sum, e) => sum + e.mood, 0) / (sorted.length - half);
     const diff = secondHalfAvg - firstHalfAvg;
     if (diff > 0.25) moodTrendDirection = 'improving';
     else if (diff < -0.25) moodTrendDirection = 'declining';
@@ -66,7 +67,7 @@ function calculateLocalTrends(entries: LocalEntry[]): TrendData {
     }
   }
 
-  const lowMoodEntries = entries.filter(e => e.mood <= 2);
+  const lowMoodEntries = entries.filter((e) => e.mood <= 2);
   const correlations: string[] = [];
 
   if (lowMoodEntries.length > 0) {
@@ -84,20 +85,30 @@ function calculateLocalTrends(entries: LocalEntry[]): TrendData {
     if (sortedTags.length > 0) {
       const [tag, count] = sortedTags[0];
       const pct = Math.round((count / lowMoodEntries.length) * 100);
-      if (pct >= 40) correlations.push(`Your lower-mood days seem to frequently co-occur with topics related to "${tag.replace('_', ' ')}" (${pct}% of low mood days).`);
+      if (pct >= 40)
+        correlations.push(
+          `Your lower-mood days seem to frequently co-occur with topics related to "${tag.replace('_', ' ')}" (${pct}% of low mood days).`
+        );
     }
     if (sortedEmos.length > 0) {
       const [emo, count] = sortedEmos[0];
       const pct = Math.round((count / lowMoodEntries.length) * 100);
-      if (pct >= 45) correlations.push(`When your mood is low, you often describe feeling "${emo}" (${pct}% of these days).`);
+      if (pct >= 45)
+        correlations.push(
+          `When your mood is low, you often describe feeling "${emo}" (${pct}% of these days).`
+        );
     }
     if (correlations.length === 0 && sortedTags.length > 0) {
-      correlations.push(`There is a subtle co-occurrence pattern between lower mood and "${sortedTags[0][0].replace('_', ' ')}".`);
+      correlations.push(
+        `There is a subtle co-occurrence pattern between lower mood and "${sortedTags[0][0].replace('_', ' ')}".`
+      );
     }
   }
 
   if (correlations.length === 0) {
-    correlations.push("We haven't detected any low-mood clusters yet. Continue prioritizing sleep and regular study breaks!");
+    correlations.push(
+      "We haven't detected any low-mood clusters yet. Continue prioritizing sleep and regular study breaks!"
+    );
   }
 
   return {
@@ -106,7 +117,7 @@ function calculateLocalTrends(entries: LocalEntry[]): TrendData {
     emotionFrequencies,
     tagFrequencies,
     correlations,
-    totalEntries
+    totalEntries,
   };
 }
 
@@ -173,7 +184,8 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
         </div>
         <h2 className="text-xl font-bold text-slate-800">No Trends Available Yet</h2>
         <p className="text-sm text-slate-500 leading-relaxed">
-          Log a mood check-in or journal entry on the <strong>Today</strong> tab. Once you begin logging, we will plot your mood over time and surface co-occurring triggers.
+          Log a mood check-in or journal entry on the <strong>Today</strong> tab. Once you begin
+          logging, we will plot your mood over time and surface co-occurring triggers.
         </p>
       </div>
     );
@@ -195,34 +207,41 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
   // Let's create dummy dates or sort actual dates for the timeline.
   const chartTimeline = historyList
     .sort((a, b) => a.date.localeCompare(b.date))
-    .map(h => ({
+    .map((h) => ({
       date: h.date.substring(5), // MM-DD format
-      mood: h.mood
+      mood: h.mood,
     }));
 
   // Month grid values helper (30 squares representing recent mood history)
   const gridEntries = [...historyList].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30);
   const moodColorMap = (mood: number) => {
     switch (mood) {
-      case 1: return 'bg-slate-700 hover:scale-105'; // low unpleasant
-      case 2: return 'bg-rose-300 hover:scale-105';  // high unpleasant
-      case 3: return 'bg-slate-200 hover:scale-105';  // neutral
-      case 4: return 'bg-teal-300 hover:scale-105';   // low pleasant
-      case 5: return 'bg-indigo-300 hover:scale-105'; // high pleasant
-      default: return 'bg-slate-100';
+      case 1:
+        return 'bg-slate-700 hover:scale-105'; // low unpleasant
+      case 2:
+        return 'bg-rose-300 hover:scale-105'; // high unpleasant
+      case 3:
+        return 'bg-slate-200 hover:scale-105'; // neutral
+      case 4:
+        return 'bg-teal-300 hover:scale-105'; // low pleasant
+      case 5:
+        return 'bg-indigo-300 hover:scale-105'; // high pleasant
+      default:
+        return 'bg-slate-100';
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-      
       {/* Title */}
       <div className="flex items-center justify-between pb-2">
         <div>
           <h1 className="text-xl font-bold text-slate-800">Your Study Well-being Trends</h1>
-          <p className="text-xs text-slate-500">Insights and co-occurrences compiled in code from your logs</p>
+          <p className="text-xs text-slate-500">
+            Insights and co-occurrences compiled in code from your logs
+          </p>
         </div>
-        <button 
+        <button
           onClick={loadData}
           className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-100 transition-all"
           title="Refresh trends"
@@ -233,10 +252,11 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
 
       {/* Overview Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        
         {/* Average Mood Card */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Average Mood</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            Average Mood
+          </span>
           <div className="flex items-baseline gap-2 py-2">
             <span className="text-4xl font-extrabold text-slate-800">{trends?.averageMood}</span>
             <span className="text-sm text-slate-400 font-semibold">/ 5</span>
@@ -246,7 +266,9 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
 
         {/* Trend Indicator Card */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Mood Trend</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            Mood Trend
+          </span>
           <div className="py-2 flex items-center gap-2">
             {trends?.moodTrendDirection === 'improving' && (
               <div className="flex items-center gap-1.5 text-teal-600 font-bold text-lg">
@@ -266,7 +288,9 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
               </div>
             )}
             {trends?.moodTrendDirection === 'insufficient_data' && (
-              <span className="text-sm text-slate-500 font-semibold italic">Awaiting more logs...</span>
+              <span className="text-sm text-slate-500 font-semibold italic">
+                Awaiting more logs...
+              </span>
             )}
           </div>
           <span className="text-xs text-slate-400">Needs 4+ entries to compute.</span>
@@ -274,7 +298,9 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
 
         {/* Local Storage Indicator */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Data Location</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            Data Location
+          </span>
           <div className="py-2">
             <span className="inline-block px-3 py-1 bg-slate-100 text-slate-700 font-bold text-xs rounded-full uppercase tracking-wider">
               {localOnly ? 'Local Device' : 'Cloud Sync'}
@@ -294,7 +320,14 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
                 <XAxis dataKey="date" stroke="#94a3b8" />
                 <YAxis domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} stroke="#94a3b8" />
                 <ChartTooltip />
-                <Line type="monotone" dataKey="mood" stroke="#6366f1" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                <Line
+                  type="monotone"
+                  dataKey="mood"
+                  stroke="#6366f1"
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -303,7 +336,6 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
 
       {/* Monthly grid and correlations */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        
         {/* Month grid */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-4">
           <h3 className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
@@ -314,7 +346,7 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
           <div className="flex flex-wrap gap-2.5 pt-2">
             {gridEntries.length > 0 ? (
               gridEntries.map((e, idx) => (
-                <div 
+                <div
                   key={idx}
                   className={`w-7 h-7 rounded-lg cursor-help transition-all shadow-xs ${moodColorMap(e.mood)}`}
                   title={`Date: ${e.date}, Mood: ${e.mood}/5`}
@@ -360,12 +392,17 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
           <div className="space-y-3 pt-1">
             {trends?.correlations && trends.correlations.length > 0 ? (
               trends.correlations.map((statement, idx) => (
-                <div key={idx} className="bg-brand-50/50 border border-brand-100 p-3.5 rounded-2xl text-xs text-brand-900 leading-relaxed font-medium">
+                <div
+                  key={idx}
+                  className="bg-brand-50/50 border border-brand-100 p-3.5 rounded-2xl text-xs text-brand-900 leading-relaxed font-medium"
+                >
                   {statement}
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-400 italic">Insufficient logs to compute co-occurrence stressors.</p>
+              <p className="text-xs text-slate-400 italic">
+                Insufficient logs to compute co-occurrence stressors.
+              </p>
             )}
           </div>
         </div>
@@ -374,13 +411,16 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
       {/* Frequencies Bar Charts */}
       {emotionsChartData.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          
           {/* Top Emotions */}
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
             <h3 className="font-bold text-slate-800 text-sm mb-4">Top Emotions Logged</h3>
             <div className="h-40 w-full text-xs">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={emotionsChartData} layout="vertical" margin={{ left: -10, right: 10, top: 0, bottom: 0 }}>
+                <BarChart
+                  data={emotionsChartData}
+                  layout="vertical"
+                  margin={{ left: -10, right: 10, top: 0, bottom: 0 }}
+                >
                   <XAxis type="number" stroke="#94a3b8" />
                   <YAxis dataKey="name" type="category" stroke="#94a3b8" width={80} />
                   <ChartTooltip />
@@ -395,7 +435,11 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
             <h3 className="font-bold text-slate-800 text-sm mb-4">Top Triggers Logged</h3>
             <div className="h-40 w-full text-xs">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={tagsChartData} layout="vertical" margin={{ left: -10, right: 10, top: 0, bottom: 0 }}>
+                <BarChart
+                  data={tagsChartData}
+                  layout="vertical"
+                  margin={{ left: -10, right: 10, top: 0, bottom: 0 }}
+                >
                   <XAxis type="number" stroke="#94a3b8" />
                   <YAxis dataKey="name" type="category" stroke="#94a3b8" width={100} />
                   <ChartTooltip />
@@ -404,10 +448,8 @@ export default function TrendsView({ localOnly, refreshTrigger }: TrendsViewProp
               </ResponsiveContainer>
             </div>
           </div>
-
         </div>
       )}
-
     </div>
   );
 }

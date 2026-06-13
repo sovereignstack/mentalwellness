@@ -67,7 +67,9 @@ app.use(
 
 // The SPA and API share one origin in production, so cross-origin requests are
 // only needed in local dev (Vite :5173 proxies to the API). Lock CORS down in prod.
-app.use(cors(isProduction ? { origin: false, credentials: true } : { origin: true, credentials: true }));
+app.use(
+  cors(isProduction ? { origin: false, credentials: true } : { origin: true, credentials: true })
+);
 app.use(express.json({ limit: '50kb' })); // Cap request body size
 app.use(cookieParser());
 
@@ -177,7 +179,9 @@ app.post('/api/companion', geminiLimiter, async (req, res) => {
   try {
     const newMessage = sanitizeText(req.body.newMessage, MAX_MESSAGE_LENGTH);
     const exam = sanitizeText(req.body.exam, MAX_EXAM_LENGTH) || DEFAULT_EXAM;
-    const history = Array.isArray(req.body.history) ? req.body.history.slice(-MAX_CHAT_HISTORY) : [];
+    const history = Array.isArray(req.body.history)
+      ? req.body.history.slice(-MAX_CHAT_HISTORY)
+      : [];
 
     if (!newMessage) {
       return res.status(400).json({ error: 'Message cannot be empty.' });
@@ -193,10 +197,7 @@ app.post('/api/companion', geminiLimiter, async (req, res) => {
     const reply = await companionChat(history, newMessage, exam);
     res.json({ reply, safetyFlag: 'none' });
   } catch (error) {
-    console.error(
-      'Error in POST /api/companion:',
-      error instanceof Error ? error.message : error
-    );
+    console.error('Error in POST /api/companion:', error instanceof Error ? error.message : error);
     res.status(500).json({ error: 'Internal server error during companion response.' });
   }
 });

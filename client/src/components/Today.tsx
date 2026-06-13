@@ -8,10 +8,11 @@ import {
   Compass,
   AlertCircle,
   Sparkles,
-  Wind
+  Wind,
 } from 'lucide-react';
 import type { Entry } from '@shared/types';
 import { BoxBreathing } from './exercises';
+import { EMOTIONS, TAGS, NUDGES } from '../data/moodMeter';
 
 interface TodayProps {
   exam: string;
@@ -20,61 +21,6 @@ interface TodayProps {
 }
 
 type PostExerciseMood = 'better' | 'same' | 'worse';
-
-const EMOTIONS = [
-  // High Unpleasant (Stressed, Anxious)
-  { word: 'anxious', quadrant: 'high_unpleasant', label: 'Anxious', color: 'bg-rose-50 border-rose-200 text-rose-800 hover:bg-rose-100/50' },
-  { word: 'overwhelmed', quadrant: 'high_unpleasant', label: 'Overwhelmed', color: 'bg-rose-50 border-rose-200 text-rose-800 hover:bg-rose-100/50' },
-  { word: 'panicked', quadrant: 'high_unpleasant', label: 'Panicked', color: 'bg-rose-50 border-rose-200 text-rose-800 hover:bg-rose-100/50' },
-  { word: 'frustrated', quadrant: 'high_unpleasant', label: 'Frustrated', color: 'bg-rose-50 border-rose-200 text-rose-800 hover:bg-rose-100/50' },
-  { word: 'restless', quadrant: 'high_unpleasant', label: 'Restless', color: 'bg-rose-50 border-rose-200 text-rose-800 hover:bg-rose-100/50' },
-  { word: 'pressured', quadrant: 'high_unpleasant', label: 'Pressured', color: 'bg-rose-50 border-rose-200 text-rose-800 hover:bg-rose-100/50' },
-
-  // Low Unpleasant (Drained, Defeated)
-  { word: 'drained', quadrant: 'low_unpleasant', label: 'Drained', color: 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200/50' },
-  { word: 'hopeless', quadrant: 'low_unpleasant', label: 'Hopeless', color: 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200/50' },
-  { word: 'lonely', quadrant: 'low_unpleasant', label: 'Lonely', color: 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200/50' },
-  { word: 'defeated', quadrant: 'low_unpleasant', label: 'Defeated', color: 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200/50' },
-  { word: 'foggy', quadrant: 'low_unpleasant', label: 'Foggy', color: 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200/50' },
-  { word: 'numb', quadrant: 'low_unpleasant', label: 'Numb', color: 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200/50' },
-
-  // Low Pleasant (Calm, Grateful)
-  { word: 'calm', quadrant: 'low_pleasant', label: 'Calm', color: 'bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100/50' },
-  { word: 'relieved', quadrant: 'low_pleasant', label: 'Relieved', color: 'bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100/50' },
-  { word: 'content', quadrant: 'low_pleasant', label: 'Content', color: 'bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100/50' },
-  { word: 'rested', quadrant: 'low_pleasant', label: 'Rested', color: 'bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100/50' },
-  { word: 'grateful', quadrant: 'low_pleasant', label: 'Grateful', color: 'bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100/50' },
-  { word: 'at_ease', quadrant: 'low_pleasant', label: 'At Ease', color: 'bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100/50' },
-
-  // High Pleasant (Motivated, Focused)
-  { word: 'motivated', quadrant: 'high_pleasant', label: 'Motivated', color: 'bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100/50' },
-  { word: 'hopeful', quadrant: 'high_pleasant', label: 'Hopeful', color: 'bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100/50' },
-  { word: 'focused', quadrant: 'high_pleasant', label: 'Focused', color: 'bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100/50' },
-  { word: 'confident', quadrant: 'high_pleasant', label: 'Confident', color: 'bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100/50' },
-  { word: 'excited', quadrant: 'high_pleasant', label: 'Excited', color: 'bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100/50' },
-  { word: 'proud', quadrant: 'high_pleasant', label: 'Proud', color: 'bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100/50' }
-];
-
-const TAGS = [
-  { value: 'exam_pressure', label: 'Exam Pressure' },
-  { value: 'mock_test', label: 'Mock Test' },
-  { value: 'results', label: 'Results' },
-  { value: 'parents', label: 'Parental Pressure' },
-  { value: 'comparison', label: 'Peer Comparison' },
-  { value: 'sleep', label: 'Poor Sleep' },
-  { value: 'focus', label: 'Focus Issues' },
-  { value: 'self_doubt', label: 'Self Doubt' },
-  { value: 'time_management', label: 'Time Crunch' },
-  { value: 'health', label: 'Health Issues' },
-  { value: 'other', label: 'Other Stress' }
-];
-
-const NUDGES = [
-  "How are you feeling about your studies or upcoming mock tests?",
-  "What is the biggest source of pressure you are navigating today?",
-  "Did you notice any positive moments in your study blocks today?",
-  "Describe how you feel right now after your mock tests or study hours."
-];
 
 export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
   // Selection states
@@ -89,7 +35,9 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
 
   // Companion Chat state
   const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'model'; text: string }>>([]);
+  const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'model'; text: string }>>(
+    []
+  );
   const [isChatLoading, setIsChatLoading] = useState(false);
 
   // Guided "try it now" exercise + in-the-moment mood check (not persisted)
@@ -102,14 +50,14 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
   }, [loggedEntry]);
 
   const toggleEmotion = (word: string) => {
-    setSelectedEmotions(prev =>
-      prev.includes(word) ? prev.filter(w => w !== word) : [...prev, word]
+    setSelectedEmotions((prev) =>
+      prev.includes(word) ? prev.filter((w) => w !== word) : [...prev, word]
     );
   };
 
   const toggleTag = (value: string) => {
-    setSelectedTags(prev =>
-      prev.includes(value) ? prev.filter(t => t !== value) : [...prev, value]
+    setSelectedTags((prev) =>
+      prev.includes(value) ? prev.filter((t) => t !== value) : [...prev, value]
     );
   };
 
@@ -138,8 +86,8 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
           tags: selectedTags,
           journal: '',
           exam,
-          localOnly
-        })
+          localOnly,
+        }),
       });
 
       const data = await response.json();
@@ -167,7 +115,7 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
         copingStrategy: '',
         mindfulnessExercise: '',
         motivation: '',
-        safetyFlag: 'none'
+        safetyFlag: 'none',
       };
       saveEntryLocally(fallbackEntry);
       setLoggedEntry(fallbackEntry);
@@ -189,8 +137,8 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
           tags: selectedTags,
           journal: journalText,
           exam,
-          localOnly
-        })
+          localOnly,
+        }),
       });
 
       const data = await response.json();
@@ -214,11 +162,14 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
         quickLog: false,
         themes: selectedTags,
         detectedStressors: selectedTags,
-        reflection: 'Thank you for writing. Even when the server connection is weak, remember that your efforts matter and resting is part of the process.',
-        copingStrategy: 'Write down 3 tiny tasks for today, complete just one, and cross off the rest.',
-        mindfulnessExercise: 'Inhale for 4 seconds, hold for 4 seconds, exhale for 4 seconds. Repeat 3 times.',
+        reflection:
+          'Thank you for writing. Even when the server connection is weak, remember that your efforts matter and resting is part of the process.',
+        copingStrategy:
+          'Write down 3 tiny tasks for today, complete just one, and cross off the rest.',
+        mindfulnessExercise:
+          'Inhale for 4 seconds, hold for 4 seconds, exhale for 4 seconds. Repeat 3 times.',
         motivation: 'One steady step at a time is enough. You showed up today, and that matters.',
-        safetyFlag: 'none'
+        safetyFlag: 'none',
       };
       saveEntryLocally(fallbackEntry);
       setLoggedEntry(fallbackEntry);
@@ -246,26 +197,29 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
         body: JSON.stringify({
           history: updatedHistory,
           newMessage: userMsg,
-          exam
-        })
+          exam,
+        }),
       });
 
       const data = await response.json();
       if (response.ok && data.reply) {
-        setChatMessages(prev => [...prev, { role: 'model', text: data.reply }]);
-        
+        setChatMessages((prev) => [...prev, { role: 'model', text: data.reply }]);
+
         // If crisis triggered in follow-up, update main safety flag representation
         if (data.safetyFlag && data.safetyFlag !== 'none' && loggedEntry) {
           setLoggedEntry({
             ...loggedEntry,
             safetyFlag: data.safetyFlag,
-            reflection: data.reply
+            reflection: data.reply,
           });
         }
       }
     } catch (error) {
       console.error('Chat error:', error);
-      setChatMessages(prev => [...prev, { role: 'model', text: 'I am here to support you. Let us take it slow today.' }]);
+      setChatMessages((prev) => [
+        ...prev,
+        { role: 'model', text: 'I am here to support you. Let us take it slow today.' },
+      ]);
     } finally {
       setIsChatLoading(false);
     }
@@ -290,7 +244,6 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
 
     return (
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        
         {/* Distress / Crisis Card */}
         {hasCrisis ? (
           <div className="bg-white rounded-3xl border-2 border-rose-200 p-6 sm:p-8 shadow-xl space-y-6">
@@ -306,28 +259,40 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
               </div>
             </div>
 
-            <p className="text-slate-600 text-sm leading-relaxed">
-              {loggedEntry.reflection}
-            </p>
+            <p className="text-slate-600 text-sm leading-relaxed">{loggedEntry.reflection}</p>
 
             {/* India Helplines List */}
             <div className="grid grid-cols-1 gap-3 pt-2">
               <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl flex items-center justify-between">
                 <div>
-                  <h4 className="font-bold text-slate-800 text-xs sm:text-sm">Tele-MANAS (Mental Health)</h4>
-                  <p className="text-[10px] sm:text-xs text-slate-500">Government free & confidential 24/7 support.</p>
+                  <h4 className="font-bold text-slate-800 text-xs sm:text-sm">
+                    Tele-MANAS (Mental Health)
+                  </h4>
+                  <p className="text-[10px] sm:text-xs text-slate-500">
+                    Government free & confidential 24/7 support.
+                  </p>
                 </div>
-                <a href="tel:14416" className="bg-rose-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-xl hover:bg-rose-700">
+                <a
+                  href="tel:14416"
+                  className="bg-rose-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-xl hover:bg-rose-700"
+                >
                   Call 14416
                 </a>
               </div>
-              
+
               <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl flex items-center justify-between">
                 <div>
-                  <h4 className="font-bold text-slate-800 text-xs sm:text-sm">KIRAN (Govt Helpline)</h4>
-                  <p className="text-[10px] sm:text-xs text-slate-500">24/7 mental wellness rehabilitation support.</p>
+                  <h4 className="font-bold text-slate-800 text-xs sm:text-sm">
+                    KIRAN (Govt Helpline)
+                  </h4>
+                  <p className="text-[10px] sm:text-xs text-slate-500">
+                    24/7 mental wellness rehabilitation support.
+                  </p>
                 </div>
-                <a href="tel:18005990019" className="bg-rose-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-xl hover:bg-rose-700">
+                <a
+                  href="tel:18005990019"
+                  className="bg-rose-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-xl hover:bg-rose-700"
+                >
                   Call 1800-599-0019
                 </a>
               </div>
@@ -335,9 +300,14 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
               <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl flex items-center justify-between">
                 <div>
                   <h4 className="font-bold text-slate-800 text-xs sm:text-sm">AASRA Helpline</h4>
-                  <p className="text-[10px] sm:text-xs text-slate-500">24/7 suicide prevention support.</p>
+                  <p className="text-[10px] sm:text-xs text-slate-500">
+                    24/7 suicide prevention support.
+                  </p>
                 </div>
-                <a href="tel:+919820466726" className="bg-rose-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-xl hover:bg-rose-700">
+                <a
+                  href="tel:+919820466726"
+                  className="bg-rose-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-xl hover:bg-rose-700"
+                >
                   Call AASRA
                 </a>
               </div>
@@ -362,14 +332,13 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
         ) : (
           // Standard Analysis Cards
           <div className="space-y-6">
-            
             {/* Reflection card */}
             <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-4">
               <div className="flex items-center gap-2">
                 <Smile className="text-brand-500" size={24} />
                 <h2 className="text-lg font-bold text-slate-800">Your Companion Reflects</h2>
               </div>
-              
+
               <p className="text-slate-600 text-sm leading-relaxed italic">
                 &ldquo;{loggedEntry.reflection}&rdquo;
               </p>
@@ -377,7 +346,10 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
               {loggedEntry.themes.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-2">
                   {loggedEntry.themes.map((t, idx) => (
-                    <span key={idx} className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                    <span
+                      key={idx}
+                      className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md uppercase tracking-wider"
+                    >
                       {t}
                     </span>
                   ))}
@@ -389,7 +361,9 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
             {!loggedEntry.quickLog && loggedEntry.motivation && (
               <div className="bg-gradient-to-r from-brand-50 to-indigo-50 border border-brand-100 rounded-3xl p-5 flex items-start gap-3">
                 <Sparkles size={18} className="text-brand-500 shrink-0 mt-0.5" />
-                <p className="text-sm text-brand-900 font-medium leading-relaxed">{loggedEntry.motivation}</p>
+                <p className="text-sm text-brand-900 font-medium leading-relaxed">
+                  {loggedEntry.motivation}
+                </p>
               </div>
             )}
 
@@ -398,7 +372,9 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Coping Action */}
                 <div className="bg-indigo-50/50 border border-indigo-100 rounded-3xl p-6 space-y-3 flex flex-col">
-                  <span className="text-[10px] font-extrabold text-indigo-700 uppercase tracking-widest block">Coping Strategy</span>
+                  <span className="text-[10px] font-extrabold text-indigo-700 uppercase tracking-widest block">
+                    Coping Strategy
+                  </span>
                   <h3 className="font-bold text-slate-800 text-sm">Suggested Practice</h3>
                   <p className="text-xs text-slate-600 leading-relaxed flex-1">
                     {loggedEntry.copingStrategy}
@@ -407,7 +383,9 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
 
                 {/* Mindfulness Micro-Exercise */}
                 <div className="bg-teal-50/50 border border-teal-100 rounded-3xl p-6 space-y-3 flex flex-col">
-                  <span className="text-[10px] font-extrabold text-teal-700 uppercase tracking-widest block">Mindfulness Exercise</span>
+                  <span className="text-[10px] font-extrabold text-teal-700 uppercase tracking-widest block">
+                    Mindfulness Exercise
+                  </span>
                   <h3 className="font-bold text-slate-800 text-sm">Adaptive Exercise</h3>
                   <p className="text-xs text-slate-600 leading-relaxed flex-1">
                     {loggedEntry.mindfulnessExercise}
@@ -432,10 +410,13 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
               <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-5 animate-fade-in">
                 <div className="flex items-center gap-2">
                   <Wind className="text-teal-500" size={20} />
-                  <h3 className="font-bold text-slate-800 text-sm">Let&rsquo;s take a minute together</h3>
+                  <h3 className="font-bold text-slate-800 text-sm">
+                    Let&rsquo;s take a minute together
+                  </h3>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Follow the circle for a round or two of box breathing. There&rsquo;s no rush — pause whenever you like.
+                  Follow the circle for a round or two of box breathing. There&rsquo;s no rush —
+                  pause whenever you like.
                 </p>
 
                 <BoxBreathing size="lg" />
@@ -444,11 +425,13 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
                 <div className="border-t border-slate-100 pt-5 space-y-3">
                   <p className="text-sm font-semibold text-slate-700">How do you feel now?</p>
                   <div className="flex flex-col sm:flex-row gap-2">
-                    {([
-                      { key: 'better', label: 'A little lighter' },
-                      { key: 'same', label: 'About the same' },
-                      { key: 'worse', label: 'Still struggling' }
-                    ] as { key: PostExerciseMood; label: string }[]).map((opt) => (
+                    {(
+                      [
+                        { key: 'better', label: 'A little lighter' },
+                        { key: 'same', label: 'About the same' },
+                        { key: 'worse', label: 'Still struggling' },
+                      ] as { key: PostExerciseMood; label: string }[]
+                    ).map((opt) => (
                       <button
                         key={opt.key}
                         type="button"
@@ -466,20 +449,26 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
 
                   {postMood === 'better' && (
                     <p className="text-xs text-teal-700 bg-teal-50 border border-teal-100 rounded-2xl p-3 leading-relaxed animate-fade-in">
-                      That&rsquo;s wonderful — even a small shift is worth noticing. Carry this calmer breath into your next study block.
+                      That&rsquo;s wonderful — even a small shift is worth noticing. Carry this
+                      calmer breath into your next study block.
                     </p>
                   )}
                   {postMood === 'same' && (
                     <p className="text-xs text-slate-600 bg-slate-50 border border-slate-100 rounded-2xl p-3 leading-relaxed animate-fade-in">
-                      That&rsquo;s completely okay — these practices add up over time, not all at once. Be gentle with yourself today.
+                      That&rsquo;s completely okay — these practices add up over time, not all at
+                      once. Be gentle with yourself today.
                     </p>
                   )}
                   {postMood === 'worse' && (
                     <div className="text-xs text-rose-700 bg-rose-50 border border-rose-100 rounded-2xl p-3 leading-relaxed space-y-2 animate-fade-in">
                       <p>
-                        Thank you for being honest. If the heaviness is staying with you, please consider reaching out — talking to someone helps.
+                        Thank you for being honest. If the heaviness is staying with you, please
+                        consider reaching out — talking to someone helps.
                       </p>
-                      <a href="tel:14416" className="inline-block font-bold text-rose-700 underline">
+                      <a
+                        href="tel:14416"
+                        className="inline-block font-bold text-rose-700 underline"
+                      >
                         Call Tele-MANAS 14416 (free, 24/7)
                       </a>
                       <span className="block text-rose-600">
@@ -506,7 +495,8 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
                 aria-label="Companion conversation"
               >
                 <div className="bg-slate-50 text-slate-600 p-3 rounded-2xl max-w-[85%] self-start border border-slate-100">
-                  Hi! How are you holding up with your {exam} prep? Feel free to tell me what is on your mind.
+                  Hi! How are you holding up with your {exam} prep? Feel free to tell me what is on
+                  your mind.
                 </div>
 
                 {chatMessages.map((msg, idx) => (
@@ -557,10 +547,8 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
             >
               Start New Check-in
             </button>
-
           </div>
         )}
-
       </div>
     );
   }
@@ -570,7 +558,6 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
   // ==========================================
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-      
       {/* Intro prompt */}
       <div className="space-y-1 text-center py-4">
         <h1 className="text-2xl font-bold text-slate-800">How is your day going?</h1>
@@ -580,7 +567,6 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
       </div>
 
       <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-6">
-        
         {/* Step 1: Mood Meter (Emotion picker) */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -592,7 +578,7 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {EMOTIONS.map(emo => {
+            {EMOTIONS.map((emo) => {
               const isSelected = selectedEmotions.includes(emo.word);
               return (
                 <button
@@ -622,7 +608,7 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
           </h3>
 
           <div className="flex flex-wrap gap-1.5">
-            {TAGS.map(tag => {
+            {TAGS.map((tag) => {
               const isSelected = selectedTags.includes(tag.value);
               return (
                 <button
@@ -713,7 +699,6 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
             )}
           </button>
         </div>
-
       </div>
     </div>
   );

@@ -39,7 +39,7 @@ export const EMOTION_TAXONOMY: Emotion[] = [
   { word: 'focused', quadrant: 'high_pleasant', label: 'Focused' },
   { word: 'confident', quadrant: 'high_pleasant', label: 'Confident' },
   { word: 'excited', quadrant: 'high_pleasant', label: 'Excited' },
-  { word: 'proud', quadrant: 'high_pleasant', label: 'Proud' }
+  { word: 'proud', quadrant: 'high_pleasant', label: 'Proud' },
 ];
 
 /**
@@ -59,7 +59,7 @@ export function deriveMoodFromEmotions(emotionWords: string[]): 1 | 2 | 3 | 4 | 
   let count = 0;
 
   for (const word of emotionWords) {
-    const found = EMOTION_TAXONOMY.find(e => e.word === word);
+    const found = EMOTION_TAXONOMY.find((e) => e.word === word);
     if (found) {
       count++;
       switch (found.quadrant) {
@@ -85,7 +85,7 @@ export function deriveMoodFromEmotions(emotionWords: string[]): 1 | 2 | 3 | 4 | 
 
   const average = totalScore / count;
   const rounded = Math.round(average);
-  
+
   if (rounded >= 1 && rounded <= 5) {
     return rounded as 1 | 2 | 3 | 4 | 5;
   }

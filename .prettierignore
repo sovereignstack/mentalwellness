@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+**/dist
+**/node_modules
+*.tsbuildinfo
+package-lock.json
+**/package-lock.json
+client/public

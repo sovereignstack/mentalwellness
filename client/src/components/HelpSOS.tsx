@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-  ShieldAlert,
-  Compass,
-  Trash2,
-  PhoneCall,
-  AlertCircle
-} from 'lucide-react';
+import { ShieldAlert, Compass, Trash2, PhoneCall, AlertCircle } from 'lucide-react';
 import { BoxBreathing, Grounding54321 } from './exercises';
 
 interface HelpSOSProps {
@@ -22,12 +16,12 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
     try {
       // 1. Wipe client-side localStorage
       localStorage.clear();
-      
+
       // 2. Wipe server-side Firestore
       const response = await fetch('/api/data', {
-        method: 'DELETE'
+        method: 'DELETE',
       });
-      
+
       if (response.ok) {
         console.log('All session and database records deleted successfully.');
       }
@@ -42,7 +36,6 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-      
       {/* Page Header */}
       <div className="space-y-1 text-center py-4">
         <h1 className="text-2xl font-bold text-slate-800">Support & Resource Center</h1>
@@ -55,18 +48,23 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
       <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-6">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <PhoneCall className="text-rose-500" size={20} />
-          <h2 className="font-bold text-slate-800 text-sm sm:text-base">24/7 Professional Helpline Contact Support</h2>
+          <h2 className="font-bold text-slate-800 text-sm sm:text-base">
+            24/7 Professional Helpline Contact Support
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 gap-3">
-          
           <div className="bg-slate-50 border border-slate-200/50 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h4 className="font-bold text-slate-800 text-sm">Tele-MANAS (Mental Health Helpline)</h4>
-              <p className="text-xs text-slate-500">Government of India National Mental Health program.</p>
+              <h4 className="font-bold text-slate-800 text-sm">
+                Tele-MANAS (Mental Health Helpline)
+              </h4>
+              <p className="text-xs text-slate-500">
+                Government of India National Mental Health program.
+              </p>
             </div>
-            <a 
-              href="tel:14416" 
+            <a
+              href="tel:14416"
               className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl text-center shadow-md shadow-rose-600/10"
             >
               Call 14416
@@ -76,10 +74,12 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
           <div className="bg-slate-50 border border-slate-200/50 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h4 className="font-bold text-slate-800 text-sm">KIRAN (Govt Helpline)</h4>
-              <p className="text-xs text-slate-500">Government support for psychological wellness & rehabilitation.</p>
+              <p className="text-xs text-slate-500">
+                Government support for psychological wellness & rehabilitation.
+              </p>
             </div>
-            <a 
-              href="tel:18005990019" 
+            <a
+              href="tel:18005990019"
               className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl text-center shadow-md shadow-rose-600/10"
             >
               Call 1800-599-0019
@@ -89,10 +89,12 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
           <div className="bg-slate-50 border border-slate-200/50 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h4 className="font-bold text-slate-800 text-sm">AASRA Suicide Prevention Line</h4>
-              <p className="text-xs text-slate-500">Non-profit volunteer-run suicide prevention helpline.</p>
+              <p className="text-xs text-slate-500">
+                Non-profit volunteer-run suicide prevention helpline.
+              </p>
             </div>
-            <a 
-              href="tel:+919820466726" 
+            <a
+              href="tel:+919820466726"
               className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl text-center shadow-md shadow-rose-600/10"
             >
               Call +91-9820466726
@@ -105,7 +107,9 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
       <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-6">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <Compass className="text-indigo-500" size={20} />
-          <h2 className="font-bold text-slate-800 text-sm sm:text-base">Interactive Grounding Exercises</h2>
+          <h2 className="font-bold text-slate-800 text-sm sm:text-base">
+            Interactive Grounding Exercises
+          </h2>
         </div>
 
         <div className="flex gap-2">
@@ -145,8 +149,9 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
 
         <div className="space-y-4">
           <p className="text-xs text-slate-500 leading-relaxed">
-            Because your logs contain personal wellness thoughts, you have full control over your data.
-            Deleting your data will wipe all local check-ins on this browser and clear all Firestore records matching your anonymous session ID. 
+            Because your logs contain personal wellness thoughts, you have full control over your
+            data. Deleting your data will wipe all local check-ins on this browser and clear all
+            Firestore records matching your anonymous session ID.
             <strong> This action is irreversible.</strong>
           </p>
 
@@ -166,7 +171,9 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-3 animate-fade-in">
                 <p className="text-xs text-amber-800 font-semibold flex items-center gap-1.5">
                   <AlertCircle size={14} />
-                  <span>Are you sure? This will delete all entries from this browser and cloud.</span>
+                  <span>
+                    Are you sure? This will delete all entries from this browser and cloud.
+                  </span>
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -191,7 +198,10 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
               <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 space-y-3 animate-fade-in">
                 <p className="text-xs text-rose-800 font-bold flex items-center gap-1.5">
                   <ShieldAlert size={14} />
-                  <span>Final Warning: All wellness charts, history, and AI analysis will be lost forever.</span>
+                  <span>
+                    Final Warning: All wellness charts, history, and AI analysis will be lost
+                    forever.
+                  </span>
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -216,7 +226,6 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

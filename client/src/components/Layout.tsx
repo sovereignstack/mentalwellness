@@ -34,20 +34,28 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
       {!isOnline && (
         <div className="bg-amber-500 text-white text-xs py-2 px-4 flex items-center justify-center gap-2 font-medium sticky top-0 z-50 shadow-sm animate-pulse">
           <WifiOff size={14} />
-          <span>Offline Mode. AI analysis is paused, but quick logs, crisis resource numbers, and grounding scripts are fully functional.</span>
+          <span>
+            Offline Mode. AI analysis is paused, but quick logs, crisis resource numbers, and
+            grounding scripts are fully functional.
+          </span>
         </div>
       )}
 
       {/* Navigation Header */}
       <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-100 z-40 px-4 py-3 shadow-xs">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('today')}>
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => setActiveTab('today')}
+          >
             <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/20">
               ME
             </div>
             <div>
               <span className="text-lg font-bold text-slate-800 tracking-tight">MindEase</span>
-              <span className="text-[10px] block font-semibold text-brand-600 uppercase tracking-wider -mt-1">Well-being Companion</span>
+              <span className="text-[10px] block font-semibold text-brand-600 uppercase tracking-wider -mt-1">
+                Well-being Companion
+              </span>
             </div>
           </div>
 
@@ -100,9 +108,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 md:py-8">
-        {children}
-      </main>
+      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 md:py-8">{children}</main>
 
       {/* Persistent Disclaimer Footer */}
       <footer className="bg-slate-100 border-t border-slate-200 mt-12 py-8 px-4 text-center text-xs text-slate-500">
@@ -112,13 +118,18 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             <span>Non-Clinical companion tool</span>
           </div>
           <p className="leading-relaxed">
-            MindEase is an AI well-being companion that provides general stress tracking, pattern insights, and coping recommendations for students preparing for high-stakes Indian exams. It does not provide clinical mental health treatment, medical diagnosis, or therapist intervention.
+            MindEase is an AI well-being companion that provides general stress tracking, pattern
+            insights, and coping recommendations for students preparing for high-stakes Indian
+            exams. It does not provide clinical mental health treatment, medical diagnosis, or
+            therapist intervention.
           </p>
           <p className="font-medium text-slate-600">
-            If you are in severe distress or experiencing thoughts of self-harm, please tap the SOS button to access national 24/7 helplines in India.
+            If you are in severe distress or experiencing thoughts of self-harm, please tap the SOS
+            button to access national 24/7 helplines in India.
           </p>
           <div className="pt-2 text-[10px] text-slate-400">
-            &copy; {new Date().getFullYear()} MindEase. Your privacy is protected. Anonymous Session data is processed in compliance with student safety protocols.
+            &copy; {new Date().getFullYear()} MindEase. Your privacy is protected. Anonymous Session
+            data is processed in compliance with student safety protocols.
           </div>
         </div>
       </footer>
@@ -126,13 +137,13 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
       {/* SOS Modal Dialog */}
       {isSOSOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div 
+          <div
             className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative overflow-y-auto max-h-[90vh]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="sos-modal-title"
           >
-            <button 
+            <button
               onClick={() => {
                 setIsSOSOpen(false);
                 setActiveGrounding(null);
@@ -147,9 +158,12 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto">
                 <ShieldAlert size={26} />
               </div>
-              <h2 id="sos-modal-title" className="text-xl font-bold text-slate-800">Emergency Crisis Support</h2>
+              <h2 id="sos-modal-title" className="text-xl font-bold text-slate-800">
+                Emergency Crisis Support
+              </h2>
               <p className="text-sm text-slate-600 max-w-sm mx-auto">
-                If you or a student you know is feeling unsafe or experiencing severe distress, please reach out to these free, confidential, 24/7 Indian helplines:
+                If you or a student you know is feeling unsafe or experiencing severe distress,
+                please reach out to these free, confidential, 24/7 Indian helplines:
               </p>
             </div>
 
@@ -158,10 +172,12 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               <div className="bg-rose-50/50 border border-rose-100 p-4 rounded-2xl flex items-center justify-between">
                 <div>
                   <h4 className="font-bold text-slate-800 text-sm">Tele-MANAS (Govt of India)</h4>
-                  <p className="text-xs text-slate-500">Free, confidential mental health helpline.</p>
+                  <p className="text-xs text-slate-500">
+                    Free, confidential mental health helpline.
+                  </p>
                 </div>
-                <a 
-                  href="tel:14416" 
+                <a
+                  href="tel:14416"
                   className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md shadow-rose-600/10"
                 >
                   Call 14416
@@ -171,10 +187,12 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               <div className="bg-rose-50/50 border border-rose-100 p-4 rounded-2xl flex items-center justify-between">
                 <div>
                   <h4 className="font-bold text-slate-800 text-sm">KIRAN (Govt Helpline)</h4>
-                  <p className="text-xs text-slate-500">Govt support for mental health rehabilitation.</p>
+                  <p className="text-xs text-slate-500">
+                    Govt support for mental health rehabilitation.
+                  </p>
                 </div>
-                <a 
-                  href="tel:18005990019" 
+                <a
+                  href="tel:18005990019"
                   className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md shadow-rose-600/10"
                 >
                   Call 1800-599-0019
@@ -186,8 +204,8 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                   <h4 className="font-bold text-slate-800 text-sm">AASRA Helpline</h4>
                   <p className="text-xs text-slate-500">Non-profit suicide prevention network.</p>
                 </div>
-                <a 
-                  href="tel:+919820466726" 
+                <a
+                  href="tel:+919820466726"
                   className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md shadow-rose-600/10"
                 >
                   Call +91-9820466726
@@ -197,8 +215,10 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
             {/* Grounding Exercise Picker inside SOS */}
             <div className="border-t border-slate-100 pt-4">
-              <h3 className="font-semibold text-slate-800 text-sm mb-3">Grounding Exercises (Immediate Relief)</h3>
-              
+              <h3 className="font-semibold text-slate-800 text-sm mb-3">
+                Grounding Exercises (Immediate Relief)
+              </h3>
+
               <div className="flex gap-2 mb-4">
                 <button
                   onClick={() => setActiveGrounding('54321')}

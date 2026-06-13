@@ -47,7 +47,11 @@ describe('POST /api/entry', () => {
   it('analyzes a safe full entry and returns coping + motivation', async () => {
     const res = await request(app)
       .post('/api/entry')
-      .send({ emotions: ['anxious'], tags: ['mock_test'], journal: 'Nervous about my mock test tomorrow.' });
+      .send({
+        emotions: ['anxious'],
+        tags: ['mock_test'],
+        journal: 'Nervous about my mock test tomorrow.',
+      });
     expect(res.status).toBe(200);
     expect(res.body.entry.safetyFlag).toBe('none');
     expect(res.body.entry.copingStrategy).toBe('review one topic');
@@ -93,7 +97,9 @@ describe('POST /api/entry', () => {
 
 describe('POST /api/companion', () => {
   it('returns a bounded reply for a safe message', async () => {
-    const res = await request(app).post('/api/companion').send({ newMessage: 'I feel tired today' });
+    const res = await request(app)
+      .post('/api/companion')
+      .send({ newMessage: 'I feel tired today' });
     expect(res.body.reply).toBe('a gentle reply');
     expect(res.body.safetyFlag).toBe('none');
   });

@@ -17,10 +17,26 @@ export interface BreathingPhase {
 
 /** The four phases of box breathing (4-4-4-4), in order. */
 export const BREATHING_PHASES: BreathingPhase[] = [
-  { text: 'Breathe In…', sub: 'Slowly through your nose (4s)', bg: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
-  { text: 'Hold…', sub: 'Gently keep the air in (4s)', bg: 'bg-amber-50 border-amber-200 text-amber-700' },
-  { text: 'Breathe Out…', sub: 'Slowly through your mouth (4s)', bg: 'bg-teal-50 border-teal-200 text-teal-700' },
-  { text: 'Hold Empty…', sub: 'Rest before the next breath (4s)', bg: 'bg-rose-50 border-rose-200 text-rose-700' },
+  {
+    text: 'Breathe In…',
+    sub: 'Slowly through your nose (4s)',
+    bg: 'bg-indigo-50 border-indigo-200 text-indigo-700',
+  },
+  {
+    text: 'Hold…',
+    sub: 'Gently keep the air in (4s)',
+    bg: 'bg-amber-50 border-amber-200 text-amber-700',
+  },
+  {
+    text: 'Breathe Out…',
+    sub: 'Slowly through your mouth (4s)',
+    bg: 'bg-teal-50 border-teal-200 text-teal-700',
+  },
+  {
+    text: 'Hold Empty…',
+    sub: 'Rest before the next breath (4s)',
+    bg: 'bg-rose-50 border-rose-200 text-rose-700',
+  },
 ];
 
 const PHASE_DURATION_MS = 4000;
@@ -83,9 +99,12 @@ export function BoxBreathing({ size = 'lg', autoStart = true }: BoxBreathingProp
 export function Grounding54321() {
   return (
     <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-3 animate-fade-in">
-      <h4 className="font-bold text-xs uppercase tracking-wider text-indigo-700">5-4-3-2-1 Grounding Method</h4>
+      <h4 className="font-bold text-xs uppercase tracking-wider text-indigo-700">
+        5-4-3-2-1 Grounding Method
+      </h4>
       <p className="text-xs text-slate-500">
-        Gently shift attention to your surroundings — it helps divert focus away from stressful exam thoughts. Slowly name:
+        Gently shift attention to your surroundings — it helps divert focus away from stressful exam
+        thoughts. Slowly name:
       </p>
       <ol className="text-xs text-slate-700 space-y-2 list-decimal pl-4">
         <li>

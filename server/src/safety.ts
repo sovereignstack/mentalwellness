@@ -20,20 +20,20 @@ export const CRISIS_RESOURCES: Helpline[] = [
     name: 'Tele-MANAS',
     number: '14416',
     hours: '24/7',
-    description: 'National Mental Health Helpline of India. Free and confidential support.'
+    description: 'National Mental Health Helpline of India. Free and confidential support.',
   },
   {
     name: 'KIRAN',
     number: '1800-599-0019',
     hours: '24/7',
-    description: 'Mental Health Rehabilitation Helpline run by the Govt of India.'
+    description: 'Mental Health Rehabilitation Helpline run by the Govt of India.',
   },
   {
     name: 'AASRA',
     number: '+91-9820466726',
     hours: '24/7',
-    description: 'A non-profit organization providing support to individuals in distress.'
-  }
+    description: 'A non-profit organization providing support to individuals in distress.',
+  },
 ];
 
 export const GROUNDING_EXERCISES: GroundingExercise[] = [
@@ -45,8 +45,8 @@ export const GROUNDING_EXERCISES: GroundingExercise[] = [
       'Name 4 things you can feel or TOUCH (e.g. the desk under your hands, your shirt on your shoulders).',
       'Name 3 things you can HEAR (e.g. traffic outside, the hum of a fan, birds chirping).',
       'Name 2 things you can SMELL (e.g. soap, coffee, fresh rain).',
-      'Name 1 thing you can TASTE (e.g. toothpaste, water, mint).'
-    ]
+      'Name 1 thing you can TASTE (e.g. toothpaste, water, mint).',
+    ],
   },
   {
     id: 'box_breathing',
@@ -56,16 +56,16 @@ export const GROUNDING_EXERCISES: GroundingExercise[] = [
       'Hold your breath gently for 4 seconds.',
       'Exhale slowly and smoothly through your mouth for 4 seconds.',
       'Hold your lungs empty for 4 seconds.',
-      'Repeat this cycle 4 times.'
-    ]
-  }
+      'Repeat this cycle 4 times.',
+    ],
+  },
 ];
 
-export const DISCLAIMER = 
-  "Disclaimer: MindEase is an AI well-being companion designed to provide supportive reflection and coping strategies. It is NOT a therapist, medical device, or diagnostic service. It does not provide clinical treatment or medical advice. If you are experiencing severe distress, please contact professional medical services or reach out to one of the helplines listed below.";
+export const DISCLAIMER =
+  'Disclaimer: MindEase is an AI well-being companion designed to provide supportive reflection and coping strategies. It is NOT a therapist, medical device, or diagnostic service. It does not provide clinical treatment or medical advice. If you are experiencing severe distress, please contact professional medical services or reach out to one of the helplines listed below.';
 
-export const CRISIS_COPY = 
-  "It sounds like you are going through an incredibly difficult time right now. Please know that you are not alone, and there is support available. We care about your well-being. Please take a slow, deep breath, and consider reaching out to a professional or a trusted person in your life. Here are free, confidential 24/7 helplines in India and some grounding exercises to help you feel safer right now.";
+export const CRISIS_COPY =
+  'It sounds like you are going through an incredibly difficult time right now. Please know that you are not alone, and there is support available. We care about your well-being. Please take a slow, deep breath, and consider reaching out to a professional or a trusted person in your life. Here are free, confidential 24/7 helplines in India and some grounding exercises to help you feel safer right now.';
 
 // Local keyword pattern matching lists
 const CRISIS_KEYWORDS = [
@@ -81,7 +81,7 @@ const CRISIS_KEYWORDS = [
   /\bpoison\b/i,
   /\bharm\s+myself\b/i,
   /\bdose\s+of\s+pills\b/i,
-  /\bend\s+it\s+all\b/i
+  /\bend\s+it\s+all\b/i,
 ];
 
 const ELEVATED_KEYWORDS = [
@@ -98,7 +98,7 @@ const ELEVATED_KEYWORDS = [
   /\bwant to scream\b/i,
   /\btoo much pressure\b/i,
   /\bparents will kill me\b/i,
-  /\bfailed my life\b/i
+  /\bfailed my life\b/i,
 ];
 
 /**

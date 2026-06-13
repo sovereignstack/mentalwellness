@@ -1,12 +1,15 @@
 import { useState, type FormEvent } from 'react';
-import { ShieldCheck, BookOpen, Calendar, HelpCircle, HardDrive, CloudLightning } from 'lucide-react';
+import {
+  ShieldCheck,
+  BookOpen,
+  Calendar,
+  HelpCircle,
+  HardDrive,
+  CloudLightning,
+} from 'lucide-react';
 
 interface OnboardingProps {
-  onComplete: (config: {
-    exam: string;
-    examDate: string;
-    localOnly: boolean;
-  }) => void;
+  onComplete: (config: { exam: string; examDate: string; localOnly: boolean }) => void;
 }
 
 const EXAMS = [
@@ -17,7 +20,7 @@ const EXAMS = [
   { value: 'UPSC', label: 'UPSC (Civil Services)' },
   { value: 'CUET', label: 'CUET (University Entrance)' },
   { value: 'Boards', label: 'Class 10/12 Board Exams' },
-  { value: 'Other', label: 'Other Entrance/Licensing Exam' }
+  { value: 'Other', label: 'Other Entrance/Licensing Exam' },
 ];
 
 export default function Onboarding({ onComplete }: OnboardingProps) {
@@ -33,14 +36,13 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     onComplete({
       exam,
       examDate,
-      localOnly
+      localOnly,
     });
   };
 
   return (
     <div className="max-w-xl mx-auto py-8 px-4 sm:px-6">
       <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 space-y-6">
-        
         {/* Header Title */}
         <div className="text-center space-y-2">
           <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
@@ -48,14 +50,18 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           </div>
           <h1 className="text-2xl font-bold text-slate-800">Welcome to MindEase</h1>
           <p className="text-sm text-slate-600">
-            A quiet, AI-powered space to support your well-being during Indian entrance and board examinations.
+            A quiet, AI-powered space to support your well-being during Indian entrance and board
+            examinations.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Exam Context Selection */}
           <div className="space-y-2">
-            <label htmlFor="exam-select" className="block text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+            <label
+              htmlFor="exam-select"
+              className="block text-sm font-semibold text-slate-700 flex items-center gap-1.5"
+            >
               <BookOpen size={16} className="text-indigo-500" />
               <span>Which exam are you preparing for?</span>
             </label>
@@ -65,7 +71,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               onChange={(e) => setExam(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all text-slate-800 font-medium"
             >
-              {EXAMS.map(opt => (
+              {EXAMS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
@@ -75,7 +81,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
           {/* Exam Date Context */}
           <div className="space-y-2">
-            <label htmlFor="exam-date" className="block text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+            <label
+              htmlFor="exam-date"
+              className="block text-sm font-semibold text-slate-700 flex items-center gap-1.5"
+            >
               <Calendar size={16} className="text-indigo-500" />
               <span>Approximately when is the exam? (Optional)</span>
             </label>
@@ -94,7 +103,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               <HelpCircle size={16} className="text-indigo-500" />
               <span>Data Privacy & Storage Option</span>
             </label>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
@@ -110,7 +119,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <span>Cloud Sync Mode</span>
                 </div>
                 <p className="text-xs opacity-80 leading-relaxed">
-                  Saves your logs securely in Cloud Firestore using an anonymous ID. Retain logs across sessions.
+                  Saves your logs securely in Cloud Firestore using an anonymous ID. Retain logs
+                  across sessions.
                 </p>
               </button>
 
@@ -128,7 +138,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <span>Local-Only Mode</span>
                 </div>
                 <p className="text-xs opacity-80 leading-relaxed">
-                  Keeps all journal logs on your device. Only sends text to servers temporarily for analysis.
+                  Keeps all journal logs on your device. Only sends text to servers temporarily for
+                  analysis.
                 </p>
               </button>
             </div>
@@ -149,7 +160,9 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   className="mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
                 />
                 <span className="leading-relaxed">
-                  I understand that MindEase is a well-being companion tool and <strong>NOT a clinical therapy, diagnostic, or medical service</strong>. It does not replace professional health services.
+                  I understand that MindEase is a well-being companion tool and{' '}
+                  <strong>NOT a clinical therapy, diagnostic, or medical service</strong>. It does
+                  not replace professional health services.
                 </span>
               </label>
 
@@ -161,7 +174,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   className="mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
                 />
                 <span className="leading-relaxed">
-                  I agree that my logs are saved anonymously without user accounts or login credentials. I can wipe my data completely at any time.
+                  I agree that my logs are saved anonymously without user accounts or login
+                  credentials. I can wipe my data completely at any time.
                 </span>
               </label>
             </div>
@@ -180,7 +194,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             Enter MindEase
           </button>
         </form>
-
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ try {
     // If running in development without environment credentials,
     // we specify the project ID.
     admin.initializeApp({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT || 'promptwars-499219'
+      projectId: process.env.GOOGLE_CLOUD_PROJECT || 'promptwars-499219',
     });
     console.log('Firebase Admin SDK initialized successfully.');
   }
@@ -63,7 +63,7 @@ export async function getEntriesFromDb(userId: string): Promise<DbEntry[]> {
       .get();
 
     const entries: DbEntry[] = [];
-    snapshot.forEach(doc => {
+    snapshot.forEach((doc) => {
       entries.push(doc.data() as DbEntry);
     });
     return entries;
@@ -84,15 +84,15 @@ export async function deleteUserDataFromDb(userId: string): Promise<boolean> {
   try {
     const entriesRef = db.collection('users').doc(userId).collection('entries');
     const snapshot = await entriesRef.get();
-    
+
     const batch = db.batch();
-    snapshot.forEach(doc => {
+    snapshot.forEach((doc) => {
       batch.delete(doc.ref);
     });
-    
+
     // Also delete the main user doc if there's one
     batch.delete(db.collection('users').doc(userId));
-    
+
     await batch.commit();
     console.log(`Deleted all Firestore entries for user ${userId}`);
     return true;

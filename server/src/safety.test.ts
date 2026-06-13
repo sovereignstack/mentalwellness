@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { screenText, CRISIS_RESOURCES, GROUNDING_EXERCISES, CRISIS_COPY, DISCLAIMER } from './safety.js';
+import {
+  screenText,
+  CRISIS_RESOURCES,
+  GROUNDING_EXERCISES,
+  CRISIS_COPY,
+  DISCLAIMER,
+} from './safety.js';
 
 describe('Safety Module - screenText', () => {
   // Crisis-level detection fixtures

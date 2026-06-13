@@ -10,14 +10,14 @@
 
 ## Brief → Feature Mapping
 
-| Brief Phrase | Feature |
-|---|---|
-| **Monitor well-being** | Mood-meter emotion log (~24 words across energy×pleasantness quadrants) + context tags, with a 2-tap quick-log path, plus an optional open-ended journal — stored privately per user. |
-| **Analyze open-ended journaling** | Gemini reads each entry and returns themes, detected stressors, and an empathetic reflection (structured JSON). |
-| **Uncover hidden stress triggers & patterns** | Trends view computed in code from history: emotion/trigger frequencies, mood-over-time line chart, month color grid, and hedged correlations (e.g. "low-mood days clustering with mock tests / poor sleep"). |
-| **Hyper-personalized contextual support** | One tailored coping strategy, one short mindfulness exercise, and a short motivational line chosen for the entry's detected state and the student's exam context — plus a **"try a guided breath now"** action that runs an interactive box-breathing exercise in-app and asks how the student feels afterwards. |
-| **Empathetic always-available companion** | A bounded follow-up reflection chat after each entry, within strict safety bounds. |
-| **Safely** | Continuous two-layer crisis detection (code keyword + Gemini classify) + always-visible one-tap SOS (India helplines + grounding exercises), non-clinical disclaimers, anti-rumination guardrails. |
+| Brief Phrase                                  | Feature                                                                                                                                                                                                                                                                                                          |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Monitor well-being**                        | Mood-meter emotion log (~24 words across energy×pleasantness quadrants) + context tags, with a 2-tap quick-log path, plus an optional open-ended journal — stored privately per user.                                                                                                                            |
+| **Analyze open-ended journaling**             | Gemini reads each entry and returns themes, detected stressors, and an empathetic reflection (structured JSON).                                                                                                                                                                                                  |
+| **Uncover hidden stress triggers & patterns** | Trends view computed in code from history: emotion/trigger frequencies, mood-over-time line chart, month color grid, and hedged correlations (e.g. "low-mood days clustering with mock tests / poor sleep").                                                                                                     |
+| **Hyper-personalized contextual support**     | One tailored coping strategy, one short mindfulness exercise, and a short motivational line chosen for the entry's detected state and the student's exam context — plus a **"try a guided breath now"** action that runs an interactive box-breathing exercise in-app and asks how the student feels afterwards. |
+| **Empathetic always-available companion**     | A bounded follow-up reflection chat after each entry, within strict safety bounds.                                                                                                                                                                                                                               |
+| **Safely**                                    | Continuous two-layer crisis detection (code keyword + Gemini classify) + always-visible one-tap SOS (India helplines + grounding exercises), non-clinical disclaimers, anti-rumination guardrails.                                                                                                               |
 
 ---
 
@@ -29,7 +29,7 @@
 2. **Two logging paths** reduce friction: a **Quick Log** (2 taps, no AI, no journal writing) and a **Full Entry** (open-ended journal → Gemini analysis). Quick logs still feed Trends.
 3. **Safety pre-check runs on every entry before any AI processing** — a deterministic keyword/pattern matcher in code (`safety.ts`) PLUS a Gemini safety classification. If either flags risk → Crisis Mode. The combine rule **never downgrades** a code-level crisis based on the model.
 4. **Gemini analyzes** the journal text and returns structured JSON: empathetic reflection, themes, stressors, one coping strategy, one mindfulness exercise, and one motivational line — all contextualized to the student's exam.
-4a. **The app actively helps in the moment** — the mindfulness card offers a guided, animated box-breathing exercise the student can do right away, followed by a brief, non-persisted "how do you feel now?" check that responds with gentle encouragement (and a nudge toward the SOS helplines if they are still struggling).
+   4a. **The app actively helps in the moment** — the mindfulness card offers a guided, animated box-breathing exercise the student can do right away, followed by a brief, non-persisted "how do you feel now?" check that responds with gentle encouragement (and a nudge toward the SOS helplines if they are still struggling).
 5. **Trends are computed entirely in code** — mood averages, emotion/tag frequencies, mood direction, and low-mood co-occurrence correlations. No AI computes scores or trends.
 6. **Companion chat** allows a follow-up conversation, also safety-gated.
 
@@ -58,16 +58,16 @@ Firestore: users/{userId}/entries/{entryId}
 
 ### Module Layout (Code-vs-AI Division)
 
-| Module | Responsibility | AI? |
-|---|---|---|
-| `safety.ts` | Keyword crisis detection, crisis resources, grounding exercises, disclaimers | No — pure code, fully tested |
-| `emotions.ts` | 24-word emotion taxonomy, mood scoring from emotions | No — pure code, fully tested |
-| `trends.ts` | Mood averages, frequencies, direction, co-occurrence correlations | No — pure code, fully tested |
-| `gemini.ts` | Gemini safety classify, entry analysis, companion chat | Yes — server-side only |
-| `db.ts` | Firestore CRUD (save, fetch, delete entries) | No |
-| `index.ts` | Express API routes, middleware, static serving | No |
-| `shared/types.d.ts` | **Typed API contracts shared by client and server** (`Entry`, `DbEntry`, `AnalysisResult`, `TrendData`, …). Type-only, so it adds zero runtime weight; the client imports it via the `@shared` alias, the server via type-only imports. | No |
-| `client/src/components/exercises/` | Reusable guided-exercise components (`BoxBreathing`, `Grounding54321`) — single source of truth used by the Today, Help/SOS, and Layout screens | No |
+| Module                             | Responsibility                                                                                                                                                                                                                          | AI?                          |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `safety.ts`                        | Keyword crisis detection, crisis resources, grounding exercises, disclaimers                                                                                                                                                            | No — pure code, fully tested |
+| `emotions.ts`                      | 24-word emotion taxonomy, mood scoring from emotions                                                                                                                                                                                    | No — pure code, fully tested |
+| `trends.ts`                        | Mood averages, frequencies, direction, co-occurrence correlations                                                                                                                                                                       | No — pure code, fully tested |
+| `gemini.ts`                        | Gemini safety classify, entry analysis, companion chat                                                                                                                                                                                  | Yes — server-side only       |
+| `db.ts`                            | Firestore CRUD (save, fetch, delete entries)                                                                                                                                                                                            | No                           |
+| `index.ts`                         | Express API routes, middleware, static serving                                                                                                                                                                                          | No                           |
+| `shared/types.d.ts`                | **Typed API contracts shared by client and server** (`Entry`, `DbEntry`, `AnalysisResult`, `TrendData`, …). Type-only, so it adds zero runtime weight; the client imports it via the `@shared` alias, the server via type-only imports. | No                           |
+| `client/src/components/exercises/` | Reusable guided-exercise components (`BoxBreathing`, `Grounding54321`) — single source of truth used by the Today, Help/SOS, and Layout screens                                                                                         | No                           |
 
 **Design principle:** All numbers, scores, trends, and the first-pass crisis check are computed in deterministic, testable code. Gemini does language understanding and empathetic prose generation only. Client and server share one set of TypeScript contracts (`/shared`) so the API surface stays type-safe end to end.
 
@@ -77,12 +77,12 @@ Firestore: users/{userId}/entries/{entryId}
 
 ## Google Services Used
 
-| Service | Usage |
-|---|---|
-| **Google Antigravity** | Built the entire application in the Antigravity IDE |
-| **Google Cloud Run** | Deployed as a single container serving both frontend and API |
+| Service                              | Usage                                                               |
+| ------------------------------------ | ------------------------------------------------------------------- |
+| **Google Antigravity**               | Built the entire application in the Antigravity IDE                 |
+| **Google Cloud Run**                 | Deployed as a single container serving both frontend and API        |
 | **Google Gemini** (gemini-2.5-flash) | Server-side journal analysis, safety classification, companion chat |
-| **Google Cloud Firestore** | Persistent storage for anonymous user entries |
+| **Google Cloud Firestore**           | Persistent storage for anonymous user entries                       |
 
 ---
 
@@ -91,23 +91,27 @@ Firestore: users/{userId}/entries/{entryId}
 MindEase is a **well-being companion, NOT a therapist, diagnostician, or crisis service.**
 
 ### Two-layer crisis detection
+
 1. **Code layer** (`safety.ts`): regex-based keyword/pattern matching for suicidal ideation, self-harm, and severe distress indicators.
 2. **Gemini layer**: AI safety classification returning `none`, `elevated`, or `crisis`.
 3. **Combine rule**: `final = max(codeFlag, geminiFlag)` — crisis > elevated > none. Code-level crisis is **never downgraded** by the model.
 
 ### Crisis Mode behavior
+
 - Suppresses normal coping tips and mindfulness exercises.
 - Shows a calm crisis card with empathetic message, India helplines, and a grounding exercise.
 - SOS button remains visible on every screen, independent of detection.
 
 ### India Crisis Helplines (verified, 24/7)
-| Helpline | Number | Description |
-|---|---|---|
+
+| Helpline       | Number                    | Description                                         |
+| -------------- | ------------------------- | --------------------------------------------------- |
 | **Tele-MANAS** | 14416 (or 1-800-891-4416) | Government of India National Mental Health Helpline |
-| **KIRAN** | 1800-599-0019 | Govt Mental Health Rehabilitation Helpline |
-| **AASRA** | +91-9820466726 | Non-profit suicide prevention network |
+| **KIRAN**      | 1800-599-0019             | Govt Mental Health Rehabilitation Helpline          |
+| **AASRA**      | +91-9820466726            | Non-profit suicide prevention network               |
 
 ### Additional safety measures
+
 - Non-clinical disclaimer at onboarding and in persistent footer.
 - Anti-rumination tone: validates feelings without amplifying distress.
 - No engagement/dependency dark patterns.
@@ -118,6 +122,7 @@ MindEase is a **well-being companion, NOT a therapist, diagnostician, or crisis 
 ## Installable PWA with Offline Crisis Resources
 
 MindEase is a Progressive Web App installable to a student's home screen:
+
 - **Service worker** precaches the app shell, crisis resources, and grounding exercises.
 - **Offline capability**: Crisis helpline numbers and grounding exercises work offline. Quick logs work offline (saved to localStorage). AI analysis is paused with a gentle banner.
 - **Manifest** with proper icons for installability.
