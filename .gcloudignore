@@ -1,0 +1,16 @@
+.gcloudignore
+.git
+.gitignore
+
+# Ignore node_modules completely
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Ignore local build outputs
+client/dist/
+server/dist/
+
+# Ignore debug/config logs
+*.log
+.gemini/

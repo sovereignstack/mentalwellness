@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Builds
+dist/
+build/
+*.tsbuildinfo
+
+# Env/Secrets
+.env
+.env.local
+.env.*.local
+secret/
+keys/
+*.pem
+
+# IDE / System files
+.DS_Store
+.idea/
+.vscode/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Project submission checklist
+SUBMISSION_CHECKLIST.md
