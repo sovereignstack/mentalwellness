@@ -1,5 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
+import type { AnalysisResult, SafetyLevel } from '../../shared/types.js';
+
+export type { AnalysisResult };
 
 dotenv.config();
 
@@ -19,28 +22,21 @@ function getAI(): GoogleGenAI | null {
   return aiInstance;
 }
 
-export interface AnalysisResult {
-  reflection: string;
-  themes: string[];
-  detectedStressors: string[];
-  copingStrategy: string;
-  mindfulnessExercise: string;
-}
-
 /**
  * Classifies the student journal text for immediate safety risk.
  */
-export async function safetyClassify(text: string): Promise<'none' | 'elevated' | 'crisis'> {
+export async function safetyClassify(text: string): Promise<SafetyLevel> {
   const ai = getAI();
   if (!ai || !text.trim()) {
     return 'none';
   }
 
   try {
-    const prompt = `Classify the following student journal text for immediate safety risk.
-Return ONLY JSON with this format: {"risk": "none"|"elevated"|"crisis"}.
-"crisis" = any sign of self-harm, suicidal thoughts, or intent to harm.
-"elevated" = severe hopelessness/overwhelm without explicit self-harm.
+    const prompt = `You are a safety classifier for a student well-being app. Read the text and assess immediate risk only.
+Return ONLY JSON: {"risk": "none" | "elevated" | "crisis"}. No other text.
+- "crisis": ANY sign of self-harm, suicidal thoughts, intent or plan to harm self or others. When in doubt between crisis and elevated, choose crisis.
+- "elevated": severe hopelessness, worthlessness, or feeling unable to cope, WITHOUT explicit self-harm.
+- "none": ordinary stress, frustration, or low mood.
 Text: "${text.replace(/"/g, '\\"')}"`;
 
     const response = await ai.models.generateContent({
@@ -78,7 +74,8 @@ export async function analyzeEntry(
     themes: tags.length > 0 ? tags : ["reflection"],
     detectedStressors: tags.length > 0 ? tags : ["general pressure"],
     copingStrategy: "Take a short 5-minute stretch break and drink a glass of water before starting your next study block.",
-    mindfulnessExercise: "Close your eyes, sit comfortably, and take 5 slow, deep breaths, focusing entirely on the feeling of your lungs expanding and contracting."
+    mindfulnessExercise: "Close your eyes, sit comfortably, and take 5 slow, deep breaths, focusing entirely on the feeling of your lungs expanding and contracting.",
+    motivation: "Steady effort matters more than any single day — you are showing up, and that counts."
   };
 
   const ai = getAI();
@@ -87,19 +84,21 @@ export async function analyzeEntry(
   }
 
   try {
-    const prompt = `You are a warm, supportive well-being companion for an Indian student preparing for ${exam || 'their board/entrance exams'}.
-You are NOT a therapist and must not diagnose or give medical advice.
-Read the journal entry and respond with empathy, then help gently.
-Validate feelings without amplifying distress; encourage healthy steps, rest, and real-world support.
-Return ONLY JSON matching this structure:
+    const prompt = `You are MindEase, a warm, non-clinical well-being companion for an Indian student preparing for ${exam || 'their board/entrance exams'}.
+You are NOT a therapist; never diagnose, never give medical advice, never use clinical labels.
+Read the journal entry and help gently. Anchor everything in the student's exam context (mock tests, results, parental pressure, peer comparison, sleep, time pressure).
+Tone rules: validate feelings without amplifying them; do NOT mirror distress back in a way that deepens rumination; avoid clichés and toxic positivity ("just relax", "everything will be fine"); encourage rest, breaks, and real-world support.
+
+Respond with ONLY a single JSON object (no markdown, no commentary) with EXACTLY these keys:
 {
-  "reflection": "2-3 warm sentences acknowledging their feelings, no clichés, no toxic positivity",
-  "themes": ["short topic tags"],
-  "detectedStressors": ["likely stressors evident in the text"],
-  "copingStrategy": "ONE specific, practical, exam-context coping action",
-  "mindfulnessExercise": "ONE short exercise, <60 words, e.g. a breathing or grounding micro-practice"
+  "reflection": "2-3 warm, specific sentences acknowledging what they actually wrote",
+  "themes": ["2-4 short lowercase topic tags drawn from the entry"],
+  "detectedStressors": ["1-3 concrete stressors evident in the text"],
+  "copingStrategy": "ONE specific, practical, exam-context coping action they can do today",
+  "mindfulnessExercise": "ONE short exercise under 60 words (e.g. a breathing or grounding micro-practice)",
+  "motivation": "ONE short, genuine, exam-contextual encouraging sentence — no clichés, no pressure"
 }
-Mood the user self-reported: ${mood}/5. Context tags: ${tags.join(', ')}.
+Mood the student self-reported: ${mood}/5. Context tags: ${tags.join(', ') || 'none'}.
 Journal entry: "${journal.replace(/"/g, '\\"')}"`;
 
     const response = await ai.models.generateContent({
@@ -112,8 +111,8 @@ Journal entry: "${journal.replace(/"/g, '\\"')}"`;
 
     const responseText = response.text || '';
     const parsed = JSON.parse(responseText.trim()) as AnalysisResult;
-    
-    // Validate schema fields
+
+    // Validate schema fields defensively; motivation falls back if the model omits it.
     if (
       parsed &&
       typeof parsed.reflection === 'string' &&
@@ -122,7 +121,13 @@ Journal entry: "${journal.replace(/"/g, '\\"')}"`;
       typeof parsed.copingStrategy === 'string' &&
       typeof parsed.mindfulnessExercise === 'string'
     ) {
-      return parsed;
+      return {
+        ...parsed,
+        motivation:
+          typeof parsed.motivation === 'string' && parsed.motivation.trim()
+            ? parsed.motivation
+            : fallbackResult.motivation,
+      };
     }
     return fallbackResult;
   } catch (error) {
@@ -156,14 +161,14 @@ export async function companionChat(
       `${h.role === 'user' ? 'Student' : 'Companion'}: ${h.text}`
     ).join('\n');
 
-    const prompt = `You are a warm, supportive well-being companion for an Indian student preparing for ${exam || 'high-stakes board/entrance exams'}.
-You are NOT a therapist and must not diagnose or give medical advice.
-Continue as the same warm, non-clinical companion. Keep it brief (1-3 sentences), validating, and gently constructive.
-Do not encourage dependence — suggest real-world support and breaks where natural.
-Here is the chat history:
+    const prompt = `You are MindEase, a warm, non-clinical well-being companion for an Indian student preparing for ${exam || 'high-stakes board/entrance exams'}.
+You are NOT a therapist; never diagnose or give medical advice.
+Reply in 1-3 brief sentences: validating and gently constructive, grounded in their exam context.
+Validate without amplifying distress; avoid clichés and toxic positivity. Do NOT foster dependence ("keep talking to me") — where natural, point toward rest, breaks, and real-world support.
+Chat so far:
 ${formattedHistory}
 Student's new message: "${newMessage.replace(/"/g, '\\"')}"
-Response:`;
+Reply:`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',

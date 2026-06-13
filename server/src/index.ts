@@ -9,11 +9,24 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
 // Imports from our modular files
-import { screenText, CRISIS_COPY, SafetyLevel } from './safety.js';
+import { CRISIS_COPY } from './safety.js';
 import { deriveMoodFromEmotions } from './emotions.js';
 import { calculateTrends } from './trends.js';
-import { saveEntryToDb, getEntriesFromDb, deleteUserDataFromDb, DbEntry } from './db.js';
-import { safetyClassify, analyzeEntry, companionChat } from './gemini.js';
+import { saveEntryToDb, getEntriesFromDb, deleteUserDataFromDb } from './db.js';
+import { analyzeEntry, companionChat } from './gemini.js';
+import { determineSafetyFlag } from './safetyFlag.js';
+import { buildCrisisEntry, buildQuickLogEntry, buildFullLogEntry } from './entryFactory.js';
+import { sanitizeStringArray, sanitizeText } from './validation.js';
+import {
+  MAX_JOURNAL_LENGTH,
+  MAX_MESSAGE_LENGTH,
+  MAX_EMOTIONS_COUNT,
+  MAX_TAGS_COUNT,
+  MAX_EXAM_LENGTH,
+  MAX_CHAT_HISTORY,
+  DEFAULT_EXAM,
+  GEMINI_RATE_LIMIT,
+} from './config.js';
 
 dotenv.config();
 
@@ -22,18 +35,39 @@ const __dirname = pathModule.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const isProduction = process.env.NODE_ENV === 'production';
 
 /* ------------------------------------------------------------------ */
 /* Security: HTTP headers via helmet (§10 hardening)                  */
+/* In production the SPA is served same-origin, so we enforce a        */
+/* Content-Security-Policy. In dev, Vite injects inline scripts/HMR,   */
+/* so CSP is relaxed to avoid breaking the dev server.                 */
 /* ------------------------------------------------------------------ */
 app.use(
   helmet({
-    contentSecurityPolicy: false, // Disabled to allow inline Vite scripts in dev
+    contentSecurityPolicy: isProduction
+      ? {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            // Tailwind/recharts emit inline style attributes; Google Fonts CSS is loaded from the CDN.
+            styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+            fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+            imgSrc: ["'self'", 'data:'],
+            connectSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            baseUri: ["'self'"],
+            frameAncestors: ["'self'"],
+          },
+        }
+      : false,
     crossOriginEmbedderPolicy: false,
   })
 );
 
-app.use(cors({ origin: true, credentials: true }));
+// The SPA and API share one origin in production, so cross-origin requests are
+// only needed in local dev (Vite :5173 proxies to the API). Lock CORS down in prod.
+app.use(cors(isProduction ? { origin: false, credentials: true } : { origin: true, credentials: true }));
 app.use(express.json({ limit: '50kb' })); // Cap request body size
 app.use(cookieParser());
 
@@ -41,39 +75,12 @@ app.use(cookieParser());
 /* Rate limiting on AI-powered routes (§10: rate limit Gemini routes) */
 /* ------------------------------------------------------------------ */
 const geminiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 15, // 15 requests per minute per IP
+  windowMs: GEMINI_RATE_LIMIT.windowMs,
+  max: GEMINI_RATE_LIMIT.max,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests. Please wait a moment before trying again.' },
 });
-
-/* ------------------------------------------------------------------ */
-/* Input validation constants (§10: validate + length-cap server-side)*/
-/* ------------------------------------------------------------------ */
-const MAX_JOURNAL_LENGTH = 2000;
-const MAX_MESSAGE_LENGTH = 500;
-const MAX_EMOTIONS_COUNT = 24;
-const MAX_TAGS_COUNT = 15;
-
-/**
- * Validates and sanitizes an array of strings, enforcing length limits.
- */
-function sanitizeStringArray(arr: unknown, maxItems: number): string[] {
-  if (!Array.isArray(arr)) return [];
-  return arr
-    .filter((item): item is string => typeof item === 'string')
-    .slice(0, maxItems)
-    .map((s) => s.trim().slice(0, 100)); // Cap each item at 100 chars
-}
-
-/**
- * Validates and sanitizes a text string, enforcing length limits.
- */
-function sanitizeText(text: unknown, maxLength: number): string {
-  if (typeof text !== 'string') return '';
-  return text.trim().slice(0, maxLength);
-}
 
 // Helper to get or set anonymous userId cookie
 function getOrCreateUserId(req: express.Request, res: express.Response): string {
@@ -109,95 +116,30 @@ app.post('/api/entry', geminiLimiter, async (req, res) => {
     const emotions = sanitizeStringArray(req.body.emotions, MAX_EMOTIONS_COUNT);
     const tags = sanitizeStringArray(req.body.tags, MAX_TAGS_COUNT);
     const journal = sanitizeText(req.body.journal, MAX_JOURNAL_LENGTH);
-    const exam = sanitizeText(req.body.exam, 100) || 'board/entrance exams';
+    const exam = sanitizeText(req.body.exam, MAX_EXAM_LENGTH) || DEFAULT_EXAM;
     const localOnly = req.body.localOnly === true;
 
-    // 1. Derive mood score from chosen emotions (fallback to 3 if none)
     const mood = deriveMoodFromEmotions(emotions);
+    const base = { userId, mood, emotions, tags };
 
-    // 2. Perform safety checks on journal text
-    let safetyFlag: SafetyLevel = 'none';
+    // Two-layer crisis pre-check before any normal processing (§7).
+    const safetyFlag = await determineSafetyFlag(journal);
 
-    if (journal.length > 0) {
-      // Layer 1: Code-level keyword check (deterministic, always runs first)
-      const codeSafety = screenText(journal);
-
-      // Layer 2: Gemini safety classification
-      const geminiSafety = await safetyClassify(journal);
-
-      // Combine: crisis > elevated > none (never downgrade code-level flag)
-      if (codeSafety === 'crisis' || geminiSafety === 'crisis') {
-        safetyFlag = 'crisis';
-      } else if (codeSafety === 'elevated' || geminiSafety === 'elevated') {
-        safetyFlag = 'elevated';
-      }
-    }
-
-    // 3. Process entry based on safety level
-    let entryData: DbEntry;
-
-    if (safetyFlag === 'crisis' || safetyFlag === 'elevated') {
-      // In crisis/elevated mode, suppress coping tips and normal AI reflections (§8).
-      entryData = {
-        id: crypto.randomUUID(),
-        userId,
-        date: new Date().toISOString().split('T')[0],
-        mood,
-        emotions,
-        tags,
-        journal,
-        quickLog: journal.length === 0,
-        themes: ['Distress State'],
-        detectedStressors: tags.length > 0 ? tags : ['emotional pressure'],
-        reflection: CRISIS_COPY,
-        copingStrategy: '', // Suppressed in crisis (§8)
-        mindfulnessExercise: '', // Suppressed in crisis (§8)
-        safetyFlag,
-        createdAt: new Date().toISOString(),
-      };
+    // Build the entry for the matching logging path.
+    let entryData;
+    if (safetyFlag !== 'none') {
+      // Crisis/elevated: suppress coping/mindfulness/motivation, lead with care (§8).
+      entryData = buildCrisisEntry({ ...base, journal, safetyFlag });
     } else if (journal.length === 0) {
-      // Quick Log path: skip Gemini entirely (§2 — zero AI calls for quick-log)
-      entryData = {
-        id: crypto.randomUUID(),
-        userId,
-        date: new Date().toISOString().split('T')[0],
-        mood,
-        emotions,
-        tags,
-        journal: '',
-        quickLog: true,
-        themes: [],
-        detectedStressors: [],
-        reflection:
-          'Your quick mood log has been saved. Remember to take steady breaks and be gentle with yourself.',
-        copingStrategy: '',
-        mindfulnessExercise: '',
-        safetyFlag: 'none',
-        createdAt: new Date().toISOString(),
-      };
+      // Quick log: no journal, zero Gemini calls (§2).
+      entryData = buildQuickLogEntry(base);
     } else {
-      // Full Log path: run Gemini analysis (§7a)
+      // Full entry: one Gemini analysis call (§7a).
       const analysis = await analyzeEntry(journal, exam, mood, tags);
-      entryData = {
-        id: crypto.randomUUID(),
-        userId,
-        date: new Date().toISOString().split('T')[0],
-        mood,
-        emotions,
-        tags,
-        journal,
-        quickLog: false,
-        themes: analysis.themes,
-        detectedStressors: analysis.detectedStressors,
-        reflection: analysis.reflection,
-        copingStrategy: analysis.copingStrategy,
-        mindfulnessExercise: analysis.mindfulnessExercise,
-        safetyFlag: 'none',
-        createdAt: new Date().toISOString(),
-      };
+      entryData = buildFullLogEntry({ ...base, journal, analysis });
     }
 
-    // 4. Save to Firestore if NOT localOnly
+    // Persist to Firestore unless the user chose local-only mode.
     let savedInCloud = false;
     if (!localOnly) {
       savedInCloud = await saveEntryToDb(userId, entryData);
@@ -234,24 +176,16 @@ app.get('/api/trends', async (req, res) => {
 app.post('/api/companion', geminiLimiter, async (req, res) => {
   try {
     const newMessage = sanitizeText(req.body.newMessage, MAX_MESSAGE_LENGTH);
-    const exam = sanitizeText(req.body.exam, 100) || 'board/entrance exams';
-    const history = Array.isArray(req.body.history) ? req.body.history.slice(-20) : []; // Cap history
+    const exam = sanitizeText(req.body.exam, MAX_EXAM_LENGTH) || DEFAULT_EXAM;
+    const history = Array.isArray(req.body.history) ? req.body.history.slice(-MAX_CHAT_HISTORY) : [];
 
     if (!newMessage) {
       return res.status(400).json({ error: 'Message cannot be empty.' });
     }
 
-    // 1. Safety screening of follow-up chat (§7b: re-run safety pre-check)
-    const codeSafety = screenText(newMessage);
-    const geminiSafety = await safetyClassify(newMessage);
-    const safetyFlag: SafetyLevel =
-      codeSafety === 'crisis' || geminiSafety === 'crisis'
-        ? 'crisis'
-        : codeSafety === 'elevated' || geminiSafety === 'elevated'
-          ? 'elevated'
-          : 'none';
-
-    if (safetyFlag === 'crisis' || safetyFlag === 'elevated') {
+    // Re-run the same two-layer safety pre-check on every message (§7b).
+    const safetyFlag = await determineSafetyFlag(newMessage);
+    if (safetyFlag !== 'none') {
       return res.json({ reply: CRISIS_COPY, safetyFlag });
     }
 
@@ -301,6 +235,12 @@ app.get('*', (_req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`MindEase server listening on port ${PORT}`);
-});
+// Exported so route tests can drive the app with supertest without binding a port.
+export { app };
+
+// Vitest sets NODE_ENV='test'; only bind a port outside the test runner.
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`MindEase server listening on port ${PORT}`);
+  });
+}

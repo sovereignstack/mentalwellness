@@ -1,4 +1,7 @@
 import admin from 'firebase-admin';
+import type { DbEntry } from '../../shared/types.js';
+
+export type { DbEntry };
 
 // Initialize Firebase Admin SDK.
 // In Google Cloud Run, it utilizes Application Default Credentials (ADC) automatically.
@@ -24,24 +27,6 @@ try {
 }
 
 export const db = firestoreInstance;
-
-export interface DbEntry {
-  id: string;
-  userId: string;
-  date: string;
-  mood: number;
-  emotions: string[];
-  tags: string[];
-  journal: string;
-  quickLog: boolean;
-  themes: string[];
-  detectedStressors: string[];
-  reflection: string;
-  copingStrategy: string;
-  mindfulnessExercise: string;
-  safetyFlag: 'none' | 'elevated' | 'crisis';
-  createdAt: string;
-}
 
 /**
  * Saves a journal entry to Cloud Firestore.

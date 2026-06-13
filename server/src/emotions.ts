@@ -1,4 +1,6 @@
-export type EmotionQuadrant = 'high_unpleasant' | 'high_pleasant' | 'low_unpleasant' | 'low_pleasant';
+import type { EmotionQuadrant } from '../../shared/types.js';
+
+export type { EmotionQuadrant };
 
 export interface Emotion {
   word: string;

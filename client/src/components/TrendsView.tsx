@@ -10,19 +10,11 @@ import {
   Line
 } from 'recharts';
 import { BarChart2, Calendar, Sparkles, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
+import type { TrendData, TrendDirection } from '@shared/types';
 
 interface TrendsViewProps {
   localOnly: boolean;
   refreshTrigger: number;
-}
-
-interface TrendData {
-  averageMood: number;
-  moodTrendDirection: 'improving' | 'declining' | 'stable' | 'insufficient_data';
-  emotionFrequencies: Record<string, number>;
-  tagFrequencies: Record<string, number>;
-  correlations: string[];
-  totalEntries: number;
 }
 
 interface LocalEntry {
@@ -49,7 +41,7 @@ function calculateLocalTrends(entries: LocalEntry[]): TrendData {
   const totalMood = entries.reduce((sum, e) => sum + e.mood, 0);
   const averageMood = Math.round((totalMood / totalEntries) * 10) / 10;
 
-  let moodTrendDirection: 'improving' | 'declining' | 'stable' | 'insufficient_data' = 'stable';
+  let moodTrendDirection: TrendDirection = 'stable';
   if (totalEntries >= 4) {
     const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
     const half = Math.floor(sorted.length / 2);

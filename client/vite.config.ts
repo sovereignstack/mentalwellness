@@ -3,6 +3,12 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      // Resolve the repo-root `shared/` types module without needing Node types here.
+      '@shared': new URL('../shared', import.meta.url).pathname,
+    },
+  },
   plugins: [
     react(),
     VitePWA({

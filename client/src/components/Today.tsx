@@ -1,13 +1,17 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import { 
-  Smile, 
-  ArrowRight, 
-  Send, 
-  Clock, 
+import {
+  Smile,
+  ArrowRight,
+  Send,
+  Clock,
   MessageSquare,
   Compass,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
+  Wind
 } from 'lucide-react';
+import type { Entry } from '@shared/types';
+import { BoxBreathing } from './exercises';
 
 interface TodayProps {
   exam: string;
@@ -15,21 +19,7 @@ interface TodayProps {
   onEntryLogged: () => void;
 }
 
-interface Entry {
-  id: string;
-  date: string;
-  mood: number;
-  emotions: string[];
-  tags: string[];
-  journal: string;
-  quickLog: boolean;
-  themes: string[];
-  detectedStressors: string[];
-  reflection: string;
-  copingStrategy: string;
-  mindfulnessExercise: string;
-  safetyFlag: 'none' | 'elevated' | 'crisis';
-}
+type PostExerciseMood = 'better' | 'same' | 'worse';
 
 const EMOTIONS = [
   // High Unpleasant (Stressed, Anxious)
@@ -102,21 +92,13 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
   const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'model'; text: string }>>([]);
   const [isChatLoading, setIsChatLoading] = useState(false);
 
-  // Box breathing state for crisis mode
-  const [boxStep, setBoxStep] = useState(0);
+  // Guided "try it now" exercise + in-the-moment mood check (not persisted)
+  const [exerciseOpen, setExerciseOpen] = useState(false);
+  const [postMood, setPostMood] = useState<PostExerciseMood | null>(null);
 
   useEffect(() => {
     // Generate a random nudge prompt
     setRandomPrompt(NUDGES[Math.floor(Math.random() * NUDGES.length)]);
-  }, [loggedEntry]);
-
-  // Box breathing timer in crisis
-  useEffect(() => {
-    if (!loggedEntry || loggedEntry.safetyFlag === 'none') return;
-    const interval = setInterval(() => {
-      setBoxStep((prev) => (prev + 1) % 4);
-    }, 4000);
-    return () => clearInterval(interval);
   }, [loggedEntry]);
 
   const toggleEmotion = (word: string) => {
@@ -184,6 +166,7 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
         reflection: 'Quick mood logged locally. Make sure to take regular deep breaths.',
         copingStrategy: '',
         mindfulnessExercise: '',
+        motivation: '',
         safetyFlag: 'none'
       };
       saveEntryLocally(fallbackEntry);
@@ -234,6 +217,7 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
         reflection: 'Thank you for writing. Even when the server connection is weak, remember that your efforts matter and resting is part of the process.',
         copingStrategy: 'Write down 3 tiny tasks for today, complete just one, and cross off the rest.',
         mindfulnessExercise: 'Inhale for 4 seconds, hold for 4 seconds, exhale for 4 seconds. Repeat 3 times.',
+        motivation: 'One steady step at a time is enough. You showed up today, and that matters.',
         safetyFlag: 'none'
       };
       saveEntryLocally(fallbackEntry);
@@ -287,12 +271,16 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
     }
   };
 
-  const boxBreathingPhases = [
-    { text: 'Inhale...', sub: 'Through your nose (4s)', bg: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
-    { text: 'Hold...', sub: 'Keep air in (4s)', bg: 'bg-amber-50 border-amber-200 text-amber-700' },
-    { text: 'Exhale...', sub: 'Slowly through mouth (4s)', bg: 'bg-teal-50 border-teal-200 text-teal-700' },
-    { text: 'Hold Empty...', sub: 'Wait (4s)', bg: 'bg-rose-50 border-rose-200 text-rose-700' }
-  ];
+  // Reset the results screen back to a fresh check-in form.
+  const resetCheckIn = () => {
+    setLoggedEntry(null);
+    setSelectedEmotions([]);
+    setSelectedTags([]);
+    setJournalText('');
+    setChatMessages([]);
+    setExerciseOpen(false);
+    setPostMood(null);
+  };
 
   // ==========================================
   // RENDER: Logged Entry Results Screen
@@ -361,23 +349,11 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
                 <Compass size={18} className="text-rose-500 animate-spin-slow" />
                 <span>Box Breathing (Pause & Regain Balance)</span>
               </h3>
-              <div className={`border rounded-2xl p-5 text-center transition-all duration-500 ${boxBreathingPhases[boxStep].bg}`}>
-                <div className="w-10 h-10 border-2 border-current rounded-full flex items-center justify-center mx-auto mb-2 font-bold">
-                  {boxStep + 1}
-                </div>
-                <h4 className="font-bold text-lg">{boxBreathingPhases[boxStep].text}</h4>
-                <p className="text-xs opacity-95 mt-0.5">{boxBreathingPhases[boxStep].sub}</p>
-              </div>
+              <BoxBreathing size="lg" />
             </div>
 
             <button
-              onClick={() => {
-                setLoggedEntry(null);
-                setSelectedEmotions([]);
-                setSelectedTags([]);
-                setJournalText('');
-                setChatMessages([]);
-              }}
+              onClick={resetCheckIn}
               className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-2xl text-xs transition-all"
             >
               Reset / Log Mood Later
@@ -409,6 +385,14 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
               )}
             </div>
 
+            {/* Motivation line (brief: "motivation") */}
+            {!loggedEntry.quickLog && loggedEntry.motivation && (
+              <div className="bg-gradient-to-r from-brand-50 to-indigo-50 border border-brand-100 rounded-3xl p-5 flex items-start gap-3">
+                <Sparkles size={18} className="text-brand-500 shrink-0 mt-0.5" />
+                <p className="text-sm text-brand-900 font-medium leading-relaxed">{loggedEntry.motivation}</p>
+              </div>
+            )}
+
             {/* Support Cards Grid (Coping + Mindfulness) */}
             {!loggedEntry.quickLog && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -428,6 +412,81 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
                   <p className="text-xs text-slate-600 leading-relaxed flex-1">
                     {loggedEntry.mindfulnessExercise}
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExerciseOpen(true);
+                      setPostMood(null);
+                    }}
+                    className="mt-1 inline-flex items-center justify-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm shadow-teal-600/10"
+                  >
+                    <Wind size={14} />
+                    <span>Try a guided breath now</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Guided practice + in-the-moment mood check (not stored) */}
+            {!loggedEntry.quickLog && exerciseOpen && (
+              <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-5 animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <Wind className="text-teal-500" size={20} />
+                  <h3 className="font-bold text-slate-800 text-sm">Let&rsquo;s take a minute together</h3>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Follow the circle for a round or two of box breathing. There&rsquo;s no rush — pause whenever you like.
+                </p>
+
+                <BoxBreathing size="lg" />
+
+                {/* In-the-moment check-in */}
+                <div className="border-t border-slate-100 pt-5 space-y-3">
+                  <p className="text-sm font-semibold text-slate-700">How do you feel now?</p>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    {([
+                      { key: 'better', label: 'A little lighter' },
+                      { key: 'same', label: 'About the same' },
+                      { key: 'worse', label: 'Still struggling' }
+                    ] as { key: PostExerciseMood; label: string }[]).map((opt) => (
+                      <button
+                        key={opt.key}
+                        type="button"
+                        onClick={() => setPostMood(opt.key)}
+                        className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all ${
+                          postMood === opt.key
+                            ? 'bg-teal-600 border-teal-600 text-white shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {postMood === 'better' && (
+                    <p className="text-xs text-teal-700 bg-teal-50 border border-teal-100 rounded-2xl p-3 leading-relaxed animate-fade-in">
+                      That&rsquo;s wonderful — even a small shift is worth noticing. Carry this calmer breath into your next study block.
+                    </p>
+                  )}
+                  {postMood === 'same' && (
+                    <p className="text-xs text-slate-600 bg-slate-50 border border-slate-100 rounded-2xl p-3 leading-relaxed animate-fade-in">
+                      That&rsquo;s completely okay — these practices add up over time, not all at once. Be gentle with yourself today.
+                    </p>
+                  )}
+                  {postMood === 'worse' && (
+                    <div className="text-xs text-rose-700 bg-rose-50 border border-rose-100 rounded-2xl p-3 leading-relaxed space-y-2 animate-fade-in">
+                      <p>
+                        Thank you for being honest. If the heaviness is staying with you, please consider reaching out — talking to someone helps.
+                      </p>
+                      <a href="tel:14416" className="inline-block font-bold text-rose-700 underline">
+                        Call Tele-MANAS 14416 (free, 24/7)
+                      </a>
+                      <span className="block text-rose-600">
+                        or tap the SOS button at the top of the screen any time.
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -440,7 +499,12 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
               </div>
 
               {/* Message History */}
-              <div className="flex-1 overflow-y-auto space-y-3 pr-1 text-xs mb-4">
+              <div
+                className="flex-1 overflow-y-auto space-y-3 pr-1 text-xs mb-4"
+                role="log"
+                aria-live="polite"
+                aria-label="Companion conversation"
+              >
                 <div className="bg-slate-50 text-slate-600 p-3 rounded-2xl max-w-[85%] self-start border border-slate-100">
                   Hi! How are you holding up with your {exam} prep? Feel free to tell me what is on your mind.
                 </div>
@@ -472,11 +536,13 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   placeholder="Talk to your companion..."
+                  aria-label="Message your companion"
                   className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white text-slate-800"
                 />
                 <button
                   type="submit"
                   disabled={!chatInput.trim() || isChatLoading}
+                  aria-label="Send message"
                   className="bg-brand-600 hover:bg-brand-700 text-white p-2.5 rounded-xl transition-all shadow-md shadow-brand-600/10 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
                 >
                   <Send size={14} />
@@ -486,13 +552,7 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
 
             {/* Clear Screen Reset Button */}
             <button
-              onClick={() => {
-                setLoggedEntry(null);
-                setSelectedEmotions([]);
-                setSelectedTags([]);
-                setJournalText('');
-                setChatMessages([]);
-              }}
+              onClick={resetCheckIn}
               className="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-2xl font-bold text-xs transition-all text-center"
             >
               Start New Check-in
@@ -539,6 +599,8 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
                   type="button"
                   key={emo.word}
                   onClick={() => toggleEmotion(emo.word)}
+                  aria-pressed={isSelected}
+                  aria-label={`${emo.label}${isSelected ? ', selected' : ''}`}
                   className={`border py-2.5 px-3 rounded-xl text-xs font-semibold text-center transition-all ${
                     isSelected
                       ? 'bg-brand-600 border-brand-600 text-white shadow-md shadow-brand-600/10 scale-[1.02]'
@@ -567,6 +629,7 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
                   type="button"
                   key={tag.value}
                   onClick={() => toggleTag(tag.value)}
+                  aria-pressed={isSelected}
                   className={`border py-1.5 px-3 rounded-full text-xs transition-all ${
                     isSelected
                       ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm'

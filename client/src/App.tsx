@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+import { RefreshCw } from 'lucide-react';
 import Layout from './components/Layout.tsx';
 import Onboarding from './components/Onboarding.tsx';
 import Today from './components/Today.tsx';
-import TrendsView from './components/TrendsView.tsx';
 import HelpSOS from './components/HelpSOS.tsx';
+
+// Trends pulls in the heavy charting library (recharts); load it on demand so it
+// stays out of the initial bundle. It is precached by the PWA, so it still works offline.
+const TrendsView = lazy(() => import('./components/TrendsView.tsx'));
 
 interface LocalConfig {
   exam: string;
@@ -79,10 +83,16 @@ function App() {
         />
       )}
       {activeTab === 'trends' && (
-        <TrendsView 
-          localOnly={config.localOnly} 
-          refreshTrigger={refreshTrigger} 
-        />
+        <Suspense
+          fallback={
+            <div className="flex flex-col items-center justify-center py-20 space-y-3">
+              <RefreshCw className="animate-spin text-brand-500" size={32} />
+              <p className="text-sm text-slate-500">Loading your trends…</p>
+            </div>
+          }
+        >
+          <TrendsView localOnly={config.localOnly} refreshTrigger={refreshTrigger} />
+        </Suspense>
       )}
       {activeTab === 'help' && (
         <HelpSOS 

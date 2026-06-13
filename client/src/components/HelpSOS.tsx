@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { 
-  ShieldAlert, 
-  Compass, 
-  Trash2, 
-  PhoneCall, 
+import { useState } from 'react';
+import {
+  ShieldAlert,
+  Compass,
+  Trash2,
+  PhoneCall,
   AlertCircle
 } from 'lucide-react';
+import { BoxBreathing, Grounding54321 } from './exercises';
 
 interface HelpSOSProps {
   onDataWiped: () => void;
@@ -13,25 +14,8 @@ interface HelpSOSProps {
 
 export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
   const [activeExercise, setActiveExercise] = useState<'54321' | 'box' | null>(null);
-  const [boxStep, setBoxStep] = useState(0);
   const [deleteStep, setDeleteStep] = useState<'idle' | 'confirm_1' | 'confirm_2'>('idle');
   const [isWiping, setIsWiping] = useState(false);
-
-  // Box breathing timer
-  useEffect(() => {
-    if (activeExercise !== 'box') return;
-    const interval = setInterval(() => {
-      setBoxStep((prev) => (prev + 1) % 4);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [activeExercise]);
-
-  const boxBreathingPhases = [
-    { text: 'Inhale...', sub: 'Through your nose (4s)', bg: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
-    { text: 'Hold...', sub: 'Keep air in (4s)', bg: 'bg-amber-50 border-amber-200 text-amber-700' },
-    { text: 'Exhale...', sub: 'Slowly through mouth (4s)', bg: 'bg-teal-50 border-teal-200 text-teal-700' },
-    { text: 'Hold Empty...', sub: 'Wait (4s)', bg: 'bg-rose-50 border-rose-200 text-rose-700' }
-  ];
 
   const handleWipeData = async () => {
     setIsWiping(true);
@@ -126,10 +110,7 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
 
         <div className="flex gap-2">
           <button
-            onClick={() => {
-              setActiveExercise('54321');
-              setBoxStep(0);
-            }}
+            onClick={() => setActiveExercise('54321')}
             className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold border text-center transition-all ${
               activeExercise === '54321'
                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/10'
@@ -139,10 +120,7 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
             5-4-3-2-1 Senses
           </button>
           <button
-            onClick={() => {
-              setActiveExercise('box');
-              setBoxStep(0);
-            }}
+            onClick={() => setActiveExercise('box')}
             className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold border text-center transition-all ${
               activeExercise === 'box'
                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/10'
@@ -153,31 +131,9 @@ export default function HelpSOS({ onDataWiped }: HelpSOSProps) {
           </button>
         </div>
 
-        {activeExercise === '54321' && (
-          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-3 animate-fade-in">
-            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider text-indigo-700">5-4-3-2-1 Grounding Method</h4>
-            <p className="text-xs text-slate-500">
-              Focusing on your environment helps divert attention away from stressful exam thoughts. Slowly name:
-            </p>
-            <ol className="text-xs text-slate-700 space-y-2 list-decimal pl-4">
-              <li><strong>5 things you can SEE</strong> (e.g. your textbook, a pencil, your window).</li>
-              <li><strong>4 things you can TOUCH</strong> (e.g. the fabric of your sleeve, your desk).</li>
-              <li><strong>3 things you can HEAR</strong> (e.g. birds outside, the clock ticking).</li>
-              <li><strong>2 things you can SMELL</strong> (e.g. a cup of tea, your pen ink).</li>
-              <li><strong>1 thing you can TASTE</strong> (e.g. the mint on your tongue).</li>
-            </ol>
-          </div>
-        )}
+        {activeExercise === '54321' && <Grounding54321 />}
 
-        {activeExercise === 'box' && (
-          <div className={`border rounded-2xl p-6 text-center transition-all duration-500 ${boxBreathingPhases[boxStep].bg} animate-fade-in`}>
-            <div className="w-12 h-12 border-2 border-current rounded-full flex items-center justify-center mx-auto mb-2 font-bold text-lg">
-              {boxStep + 1}
-            </div>
-            <h4 className="font-bold text-xl">{boxBreathingPhases[boxStep].text}</h4>
-            <p className="text-xs opacity-90 mt-1">{boxBreathingPhases[boxStep].sub}</p>
-          </div>
-        )}
+        {activeExercise === 'box' && <BoxBreathing size="lg" />}
       </div>
 
       {/* Settings / Danger Zone */}

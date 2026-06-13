@@ -15,7 +15,7 @@
 | **Monitor well-being** | Mood-meter emotion log (~24 words across energy×pleasantness quadrants) + context tags, with a 2-tap quick-log path, plus an optional open-ended journal — stored privately per user. |
 | **Analyze open-ended journaling** | Gemini reads each entry and returns themes, detected stressors, and an empathetic reflection (structured JSON). |
 | **Uncover hidden stress triggers & patterns** | Trends view computed in code from history: emotion/trigger frequencies, mood-over-time line chart, month color grid, and hedged correlations (e.g. "low-mood days clustering with mock tests / poor sleep"). |
-| **Hyper-personalized contextual support** | One tailored coping strategy + one short mindfulness exercise chosen for the entry's detected state and the student's exam context. |
+| **Hyper-personalized contextual support** | One tailored coping strategy, one short mindfulness exercise, and a short motivational line chosen for the entry's detected state and the student's exam context — plus a **"try a guided breath now"** action that runs an interactive box-breathing exercise in-app and asks how the student feels afterwards. |
 | **Empathetic always-available companion** | A bounded follow-up reflection chat after each entry, within strict safety bounds. |
 | **Safely** | Continuous two-layer crisis detection (code keyword + Gemini classify) + always-visible one-tap SOS (India helplines + grounding exercises), non-clinical disclaimers, anti-rumination guardrails. |
 
@@ -28,7 +28,8 @@
 1. **Student logs mood** by selecting emotion words from a ~24-word mood-meter grid organized by energy×pleasantness quadrants (e.g. high_unpleasant: anxious, overwhelmed; low_pleasant: calm, grateful) and optionally tagging stressors (exam pressure, mock tests, parental pressure, etc.).
 2. **Two logging paths** reduce friction: a **Quick Log** (2 taps, no AI, no journal writing) and a **Full Entry** (open-ended journal → Gemini analysis). Quick logs still feed Trends.
 3. **Safety pre-check runs on every entry before any AI processing** — a deterministic keyword/pattern matcher in code (`safety.ts`) PLUS a Gemini safety classification. If either flags risk → Crisis Mode. The combine rule **never downgrades** a code-level crisis based on the model.
-4. **Gemini analyzes** the journal text and returns structured JSON: empathetic reflection, themes, stressors, one coping strategy, and one mindfulness exercise — all contextualized to the student's exam.
+4. **Gemini analyzes** the journal text and returns structured JSON: empathetic reflection, themes, stressors, one coping strategy, one mindfulness exercise, and one motivational line — all contextualized to the student's exam.
+4a. **The app actively helps in the moment** — the mindfulness card offers a guided, animated box-breathing exercise the student can do right away, followed by a brief, non-persisted "how do you feel now?" check that responds with gentle encouragement (and a nudge toward the SOS helplines if they are still struggling).
 5. **Trends are computed entirely in code** — mood averages, emotion/tag frequencies, mood direction, and low-mood co-occurrence correlations. No AI computes scores or trends.
 6. **Companion chat** allows a follow-up conversation, also safety-gated.
 
@@ -65,8 +66,12 @@ Firestore: users/{userId}/entries/{entryId}
 | `gemini.ts` | Gemini safety classify, entry analysis, companion chat | Yes — server-side only |
 | `db.ts` | Firestore CRUD (save, fetch, delete entries) | No |
 | `index.ts` | Express API routes, middleware, static serving | No |
+| `shared/types.d.ts` | **Typed API contracts shared by client and server** (`Entry`, `DbEntry`, `AnalysisResult`, `TrendData`, …). Type-only, so it adds zero runtime weight; the client imports it via the `@shared` alias, the server via type-only imports. | No |
+| `client/src/components/exercises/` | Reusable guided-exercise components (`BoxBreathing`, `Grounding54321`) — single source of truth used by the Today, Help/SOS, and Layout screens | No |
 
-**Design principle:** All numbers, scores, trends, and the first-pass crisis check are computed in deterministic, testable code. Gemini does language understanding and empathetic prose generation only.
+**Design principle:** All numbers, scores, trends, and the first-pass crisis check are computed in deterministic, testable code. Gemini does language understanding and empathetic prose generation only. Client and server share one set of TypeScript contracts (`/shared`) so the API surface stays type-safe end to end.
+
+**Testing:** pure server modules (`safety`, `trends`, `emotions`) are unit-tested with Vitest; the React screens are covered by React Testing Library smoke tests (one per screen, plus crisis-card rendering, one-tap SOS reachability, and the guided-exercise flow). Run `npm test`.
 
 ---
 

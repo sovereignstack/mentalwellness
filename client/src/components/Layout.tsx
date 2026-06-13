@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldAlert, Info, WifiOff, Home, BarChart2, Shield } from 'lucide-react';
+import { BoxBreathing, Grounding54321 } from './exercises';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,7 +13,6 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
   const [isSOSOpen, setIsSOSOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [activeGrounding, setActiveGrounding] = useState<'54321' | 'box' | null>(null);
-  const [boxStep, setBoxStep] = useState(0);
 
   // Monitor network status
   useEffect(() => {
@@ -27,24 +27,6 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
-
-  // Box breathing timer simulation
-  useEffect(() => {
-    if (activeGrounding !== 'box') return;
-    
-    const interval = setInterval(() => {
-      setBoxStep((prev) => (prev + 1) % 4);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [activeGrounding]);
-
-  const boxBreathingPhases = [
-    { text: 'Breathe In...', sub: 'Slowly through your nose (4s)', bg: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
-    { text: 'Hold...', sub: 'Gently keep air in your lungs (4s)', bg: 'bg-amber-50 border-amber-200 text-amber-700' },
-    { text: 'Breathe Out...', sub: 'Slowly through your mouth (4s)', bg: 'bg-teal-50 border-teal-200 text-teal-700' },
-    { text: 'Hold Empty...', sub: 'Keep lungs empty before next breath (4s)', bg: 'bg-rose-50 border-rose-200 text-rose-700' }
-  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
@@ -219,10 +201,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               
               <div className="flex gap-2 mb-4">
                 <button
-                  onClick={() => {
-                    setActiveGrounding('54321');
-                    setBoxStep(0);
-                  }}
+                  onClick={() => setActiveGrounding('54321')}
                   className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium border text-center transition-all ${
                     activeGrounding === '54321'
                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/10'
@@ -232,10 +211,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                   5-4-3-2-1 Senses
                 </button>
                 <button
-                  onClick={() => {
-                    setActiveGrounding('box');
-                    setBoxStep(0);
-                  }}
+                  onClick={() => setActiveGrounding('box')}
                   className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium border text-center transition-all ${
                     activeGrounding === 'box'
                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/10'
@@ -246,28 +222,9 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 </button>
               </div>
 
-              {activeGrounding === '54321' && (
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-2 animate-fade-in">
-                  <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wide text-indigo-700">5-4-3-2-1 Grounding Method</h4>
-                  <ol className="text-xs text-slate-600 space-y-1.5 list-decimal pl-4">
-                    <li>Name <strong>5 things</strong> you can see around you.</li>
-                    <li>Name <strong>4 things</strong> you can touch.</li>
-                    <li>Name <strong>3 things</strong> you can hear.</li>
-                    <li>Name <strong>2 things</strong> you can smell.</li>
-                    <li>Name <strong>1 thing</strong> you can taste.</li>
-                  </ol>
-                </div>
-              )}
+              {activeGrounding === '54321' && <Grounding54321 />}
 
-              {activeGrounding === 'box' && (
-                <div className={`border rounded-2xl p-4 text-center transition-all duration-500 ${boxBreathingPhases[boxStep].bg} animate-fade-in`}>
-                  <div className="w-10 h-10 border-2 border-current rounded-full flex items-center justify-center mx-auto mb-2 animate-pulse">
-                    {boxStep + 1}
-                  </div>
-                  <h4 className="font-bold text-lg">{boxBreathingPhases[boxStep].text}</h4>
-                  <p className="text-xs opacity-80 mt-1">{boxBreathingPhases[boxStep].sub}</p>
-                </div>
-              )}
+              {activeGrounding === 'box' && <BoxBreathing size="sm" />}
             </div>
 
             <button

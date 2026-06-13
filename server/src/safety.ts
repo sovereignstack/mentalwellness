@@ -1,4 +1,6 @@
-export type SafetyLevel = 'none' | 'elevated' | 'crisis';
+import type { SafetyLevel } from '../../shared/types.js';
+
+export type { SafetyLevel };
 
 export interface Helpline {
   name: string;
