@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { ShieldCheck, BookOpen, Calendar, HelpCircle, HardDrive, CloudLightning } from 'lucide-react';
 
 interface OnboardingProps {
@@ -27,7 +27,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!acceptedDisclaimer || !acceptedPrivacy) return;
     onComplete({

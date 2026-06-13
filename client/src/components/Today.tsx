@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { 
   Smile, 
   ArrowRight, 
@@ -244,7 +244,7 @@ export default function Today({ exam, localOnly, onEntryLogged }: TodayProps) {
   };
 
   // Companion chat message submission
-  const handleSendChatMessage = async (e: React.FormEvent) => {
+  const handleSendChatMessage = async (e: FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim() || isChatLoading) return;
 

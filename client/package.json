@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "echo 'Client tests: see server for unit tests' && exit 0"
   },
   "dependencies": {
     "lucide-react": "^0.379.0",

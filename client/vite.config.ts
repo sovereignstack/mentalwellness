@@ -10,38 +10,39 @@ export default defineConfig({
       manifest: {
         name: 'MindEase Student Companion',
         short_name: 'MindEase',
-        description: 'GenAI well-being companion for Indian students preparing for high-stakes exams',
-        theme_color: '#4f46e5',
+        description:
+          'GenAI well-being companion for Indian students preparing for high-stakes exams',
+        theme_color: '#7c3aed',
         background_color: '#f8fafc',
         display: 'standalone',
         start_url: '/',
         icons: [
           {
-            src: '/pwa-192x192.png',
+            src: '/pwa-192x192.svg',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/svg+xml',
           },
           {
-            src: '/pwa-512x512.png',
+            src: '/pwa-512x512.svg',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/svg+xml',
           },
           {
-            src: '/pwa-512x512.png',
+            src: '/pwa-512x512.svg',
             sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any'
+            type: 'image/svg+xml',
+            purpose: 'any',
           },
           {
-            src: '/pwa-512x512.png',
+            src: '/pwa-512x512.svg',
             sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable'
-          }
-        ]
+            type: 'image/svg+xml',
+            purpose: 'maskable',
+          },
+        ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,svg,woff,woff2}'],
         runtimeCaching: [
           {
             urlPattern: /^\/api\/trends/,
@@ -50,22 +51,22 @@ export default defineConfig({
               cacheName: 'api-trends-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 24 * 60 * 60
+                maxAgeSeconds: 24 * 60 * 60,
               },
-              networkTimeoutSeconds: 3
-            }
-          }
-        ]
-      }
-    })
+              networkTimeoutSeconds: 3,
+            },
+          },
+        ],
+      },
+    }),
   ],
   server: {
     port: 5173,
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
-        changeOrigin: true
-      }
-    }
-  }
+        changeOrigin: true,
+      },
+    },
+  },
 });
